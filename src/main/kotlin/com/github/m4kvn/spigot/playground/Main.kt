@@ -1,5 +1,6 @@
 package com.github.m4kvn.spigot.playground
 
+import com.github.m4kvn.spigot.playground.nms.CustomArmorStandEntity
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -10,15 +11,14 @@ import org.bukkit.plugin.java.JavaPlugin
 class Main : JavaPlugin() {
 
     override fun onEnable() {
-        val playgroundCommendExecutor = PlaygroundCommendExecutor(this)
+        val playgroundCommendExecutor = PlaygroundCommendExecutor()
         val playgroundCommand = getCommand("playground")
         playgroundCommand?.setExecutor(playgroundCommendExecutor)
     }
 }
 
-class PlaygroundCommendExecutor(
-    private val plugin: JavaPlugin,
-) : CommandExecutor {
+class PlaygroundCommendExecutor : CommandExecutor {
+    private var customArmorStandEntity: CustomArmorStandEntity? = null
 
     override fun onCommand(
         sender: CommandSender,
@@ -27,7 +27,14 @@ class PlaygroundCommendExecutor(
         args: Array<out String>,
     ): Boolean {
         if (sender !is Player) return false
-        sender.sendMessage("command ok")
+        if (customArmorStandEntity == null) {
+            val newEntity = CustomArmorStandEntity(sender)
+            customArmorStandEntity = newEntity
+            newEntity.spawn()
+        } else {
+            customArmorStandEntity?.dead()
+            customArmorStandEntity = null
+        }
         return true
     }
 }
