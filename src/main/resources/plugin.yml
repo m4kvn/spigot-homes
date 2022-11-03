@@ -1,0 +1,4 @@
+name: Playground
+version: @version@
+main: com.github.m4kvn.spigot.playground.Main
+api-version: @api-version@
