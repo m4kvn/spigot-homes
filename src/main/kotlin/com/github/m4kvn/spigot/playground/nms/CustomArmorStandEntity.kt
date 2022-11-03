@@ -1,5 +1,7 @@
 package com.github.m4kvn.spigot.playground.nms
 
+import net.minecraft.network.chat.IChatBaseComponent
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.EntityArmorStand
 import net.minecraft.world.level.World
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld
@@ -25,10 +27,28 @@ class CustomArmorStandEntity(
     }
 
     fun dead() {
-        b(RemovalReason.e)
+        removeEntity()
     }
 
     fun spawn() {
         world.addFreshEntity(this, CreatureSpawnEvent.SpawnReason.DEFAULT)
     }
+
+    fun setName(name: String) {
+        setCustomName(name)
+        showCustomName(true)
+    }
+}
+
+fun Entity.removeEntity() {
+    b(Entity.RemovalReason.e)
+}
+
+fun Entity.setCustomName(name: String) {
+    val component = IChatBaseComponent.a(name)
+    b(component)
+}
+
+fun Entity.showCustomName(isShow: Boolean) {
+    n(isShow)
 }

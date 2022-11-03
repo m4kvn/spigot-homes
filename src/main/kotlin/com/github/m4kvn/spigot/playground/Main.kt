@@ -29,6 +29,7 @@ class PlaygroundCommendExecutor : CommandExecutor {
         if (sender !is Player) return false
         if (customArmorStandEntity == null) {
             val newEntity = CustomArmorStandEntity(sender)
+            newEntity.setName(sender.name)
             customArmorStandEntity = newEntity
             newEntity.spawn()
         } else {
