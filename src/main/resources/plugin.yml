@@ -1,10 +1,9 @@
-name: Playground
+name: Homes
 version: @version@
-main: com.github.m4kvn.spigot.playground.Main
+main: com.github.m4kvn.spigot.homes.Main
 api-version: @api-version@
 commands:
-  playground:
-    description: This is Playground command.
+  homes:
+    description: This is Homes command.
     usage: /<command>
-    aliases:
-      - pg
+    aliases: ['home']

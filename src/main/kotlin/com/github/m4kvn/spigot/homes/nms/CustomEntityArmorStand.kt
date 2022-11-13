@@ -1,4 +1,4 @@
-package com.github.m4kvn.spigot.playground.nms
+package com.github.m4kvn.spigot.homes.nms
 
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.chat.IChatBaseComponent
@@ -13,23 +13,39 @@ import net.minecraft.world.entity.player.EntityHuman
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.World
 import net.minecraft.world.phys.Vec3D
-import org.bukkit.craftbukkit.v1_19_R1.CraftWorld
-import org.bukkit.entity.Player
 import org.bukkit.event.entity.CreatureSpawnEvent
 
-class CustomArmorStandEntity(
+class CustomEntityArmorStand(
     private val world: World,
-) : EntityArmorStand(EntityTypes.d, world) {
+) : EntityArmorStand(EntityTypes.d, world), DisplayEntity {
 
-    constructor(player: Player) : this(
-        world = (player.world as CraftWorld).handle,
-    ) {
-        setPosition(
-            x = player.location.x,
-            y = player.location.y,
-            z = player.location.z,
-        )
-    }
+    override var text: String?
+        get() = Z()?.string
+        set(value) {
+            val component = IChatBaseComponent.a(value)
+            super.b(component)
+        }
+
+    override var location: DisplayEntityLocation
+        get() {
+            val vec = cZ()
+            return DisplayEntityLocation(vec.c, vec.d, vec.e)
+        }
+        set(value) {
+            e(value.x, value.y, value.z)
+        }
+
+    override var isVisible: Boolean
+        get() = cu()
+        set(value) {
+            super.n(value)
+        }
+
+    override var isDead: Boolean
+        get() = du()
+        set(value) {
+            if (value) dead() else spawn()
+        }
 
     init {
         a(true) // setSmall
@@ -88,21 +104,11 @@ class CustomArmorStandEntity(
     // removeEntity(die)
     override fun a(entity_removalreason: RemovalReason?) {}
 
-    fun dead() {
-        b(RemovalReason.e)
-    }
-
-    fun spawn() {
+    private fun spawn() {
         world.addFreshEntity(this, CreatureSpawnEvent.SpawnReason.DEFAULT)
     }
 
-    private fun setPosition(x: Double, y: Double, z: Double) {
-        e(x, y, z)
-    }
-
-    fun setName(name: String) {
-        val component = IChatBaseComponent.a(name)
-        super.b(component)
-        super.n(true)
+    private fun dead() {
+        b(RemovalReason.e)
     }
 }
