@@ -19,18 +19,20 @@ class HomesCommendExecutor : CommandExecutor, KoinComponent {
         args: Array<out String>,
     ): Boolean {
         if (sender !is Player) return false
-        if (args.isEmpty()) {
-            mainCommand.execute(sender, args.toList())
-            return true
-        }
-        val subCommand = subCommandMap[args[0]]
-        if (subCommand != null) {
-            val response = subCommand.execute(sender, args.drop(1))
-            if (response is SubCommand.Response.Failed) {
-                sender.sendMessage(response.message)
+        if (args.isNotEmpty()) {
+            val subCommand = subCommandMap[args[0]]
+            if (subCommand != null) {
+                val response = subCommand.execute(sender, args.drop(1))
+                if (response is SubCommand.Response.Failed) {
+                    sender.sendMessage(response.message)
+                }
+                return true
             }
-            return true
         }
-        return false
+        val response = mainCommand.execute(sender, args.toList())
+        if (response is SubCommand.Response.Failed) {
+            sender.sendMessage(response.message)
+        }
+        return true
     }
 }
