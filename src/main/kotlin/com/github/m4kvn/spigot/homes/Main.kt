@@ -16,6 +16,7 @@ class Main : JavaPlugin() {
         single<NmsWrapper> { ProductionNmsWrapper() }
         single { DisplayEntityDataStore() }
         single { DisplayEntityManager(get(), get()) }
+        single { PlayerHomeManager() }
     }
 
     override fun onEnable() {

@@ -8,8 +8,9 @@ class PlayerHomeManager {
     private val namedHomeMap = hashMapOf<UUID, HashMap<String, PlayerHome.Named>>()
 
     fun addDefaultHome(playerHome: PlayerHome.Default): Response {
-        if (defaultHomeMap.contains(playerHome.owner.playerUUID)) {
-            return Response.DefaultHomeAlreadyExists
+        val current = defaultHomeMap[playerHome.owner.playerUUID]
+        if (current != null) {
+            return Response.DefaultHomeAlreadyExists(current)
         }
         defaultHomeMap[playerHome.owner.playerUUID] = playerHome
         return Response.Success(playerHome)
@@ -17,8 +18,9 @@ class PlayerHomeManager {
 
     fun addNamedHome(playerHome: PlayerHome.Named): Response {
         val namedHomes = namedHomeMap.getOrPut(playerHome.owner.playerUUID) { hashMapOf() }
-        if (namedHomes.contains(playerHome.name)) {
-            return Response.NamedHomeAlreadyExists
+        val current = namedHomes[playerHome.name]
+        if (current != null) {
+            return Response.NamedHomeAlreadyExists(current)
         }
         namedHomes[playerHome.name] = playerHome
         return Response.Success(playerHome)
@@ -54,9 +56,19 @@ class PlayerHomeManager {
     }
 
     sealed class Response {
-        data class Success(val playerHome: PlayerHome) : Response()
-        object DefaultHomeAlreadyExists : Response()
-        object NamedHomeAlreadyExists : Response()
+
+        data class Success(
+            val playerHome: PlayerHome,
+        ) : Response()
+
+        data class DefaultHomeAlreadyExists(
+            val currentPlayerHome: PlayerHome.Default,
+        ) : Response()
+
+        data class NamedHomeAlreadyExists(
+            val currentPlayerHome: PlayerHome.Named,
+        ) : Response()
+
         object NotFoundDefaultHome : Response()
         object NotFoundNamedHome : Response()
     }
