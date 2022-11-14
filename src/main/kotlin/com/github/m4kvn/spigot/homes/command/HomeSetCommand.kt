@@ -6,20 +6,19 @@ import com.github.m4kvn.spigot.homes.model.PlayerHomeLocation
 import com.github.m4kvn.spigot.homes.model.PlayerHomeOwner
 import com.github.m4kvn.spigot.homes.nms.DisplayEntityManager
 import org.bukkit.entity.Player
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class HomeSetCommand : KoinComponent {
+class HomeSetCommand : SubCommand {
     private val displayManager by inject<DisplayEntityManager>()
     private val homeManager by inject<PlayerHomeManager>()
 
-    fun execute(player: Player, args: List<String>): Boolean {
+    override fun execute(player: Player, args: List<String>): SubCommand.Response {
         return if (args.isNotEmpty())
             spawnNamed(player, args[0]) else
             spawnDefault(player)
     }
 
-    private fun spawnDefault(player: Player): Boolean {
+    private fun spawnDefault(player: Player): SubCommand.Response {
         val newPlayerHome = PlayerHome.Default(
             owner = PlayerHomeOwner(
                 playerUUID = player.uniqueId,
@@ -41,10 +40,10 @@ class HomeSetCommand : KoinComponent {
             homeManager.replaceDefaultHome(newPlayerHome)
         }
         displayManager.spawnEntities(player.world, newPlayerHome)
-        return true
+        return SubCommand.Response.Success
     }
 
-    private fun spawnNamed(player: Player, homeName: String): Boolean {
+    private fun spawnNamed(player: Player, homeName: String): SubCommand.Response {
         val newPlayerHome = PlayerHome.Named(
             owner = PlayerHomeOwner(
                 playerUUID = player.uniqueId,
@@ -67,6 +66,6 @@ class HomeSetCommand : KoinComponent {
             homeManager.replaceNamedHome(newPlayerHome)
         }
         displayManager.spawnEntities(player.world, newPlayerHome)
-        return true
+        return SubCommand.Response.Success
     }
 }
