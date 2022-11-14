@@ -44,6 +44,15 @@ class PlayerHomeManager {
         return Response.Success(playerHome)
     }
 
+    fun replaceDefaultHome(playerHome: PlayerHome.Default) {
+        defaultHomeMap[playerHome.owner.playerUUID] = playerHome
+    }
+
+    fun replaceNamedHome(playerHome: PlayerHome.Named) {
+        val namedHomes = namedHomeMap.getOrPut(playerHome.owner.playerUUID) { hashMapOf() }
+        namedHomes[playerHome.name] = playerHome
+    }
+
     sealed class Response {
         data class Success(val playerHome: PlayerHome) : Response()
         object DefaultHomeAlreadyExists : Response()

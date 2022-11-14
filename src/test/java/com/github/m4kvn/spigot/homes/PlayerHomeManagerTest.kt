@@ -154,4 +154,47 @@ class PlayerHomeManagerTest : KoinTest {
             actual = manager.removeNamedHome(ownerUUID, homeName)
         )
     }
+
+    @Test
+    fun デフォルトホームが既にあった場合でも新しいものを上書きできる() {
+        val playerHome1 = world.newRandomPlayerHomeDefault()
+        val playerHome2 = world.newRandomPlayerHomeDefault(
+            owner = playerHome1.owner,
+        )
+        manager.addDefaultHome(playerHome1)
+        manager.replaceDefaultHome(playerHome2)
+        assertNotEquals(
+            illegal = playerHome1,
+            actual = manager.getDefaultHome(playerHome1.owner.playerUUID),
+        )
+        assertEquals(
+            expected = playerHome2,
+            actual = manager.getDefaultHome(playerHome1.owner.playerUUID),
+        )
+    }
+
+    @Test
+    fun 同じ名前の名前付きホームが既にあった場合でも新しいものを上書きできる() {
+        val playerHome1 = world.newRandomPlayerHomeNamed()
+        val playerHome2 = world.newRandomPlayerHomeNamed(
+            owner = playerHome1.owner,
+            homeName = playerHome1.name,
+        )
+        manager.addNamedHome(playerHome1)
+        manager.replaceNamedHome(playerHome2)
+        assertNotEquals(
+            illegal = playerHome1,
+            actual = manager.getNamedHome(
+                ownerUUID = playerHome1.owner.playerUUID,
+                homeName = playerHome1.name,
+            )
+        )
+        assertEquals(
+            expected = playerHome2,
+            actual = manager.getNamedHome(
+                ownerUUID = playerHome1.owner.playerUUID,
+                homeName = playerHome1.name,
+            )
+        )
+    }
 }
