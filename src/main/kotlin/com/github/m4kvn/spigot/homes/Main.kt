@@ -2,7 +2,10 @@ package com.github.m4kvn.spigot.homes
 
 import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
 import com.github.m4kvn.spigot.homes.bukkit.ProductionBukkitWrapper
+import com.github.m4kvn.spigot.homes.listener.ChunkListener
 import com.github.m4kvn.spigot.homes.nms.*
+import org.bukkit.command.CommandExecutor
+import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -21,8 +24,19 @@ class Main : JavaPlugin() {
 
     override fun onEnable() {
         startKoin { modules(module) }
-        val homesCommendExecutor = HomesCommendExecutor()
-        val homesCommand = getCommand("homes")
-        homesCommand?.setExecutor(homesCommendExecutor)
+        register(ChunkListener())
+        register(HomesCommendExecutor())
+    }
+
+    private fun register(executor: CommandExecutor) {
+        getCommand(PLUGIN_COMMAND_NAME)?.setExecutor(executor)
+    }
+
+    private fun register(listener: Listener) {
+        server.pluginManager.registerEvents(listener, this)
+    }
+
+    companion object {
+        private const val PLUGIN_COMMAND_NAME = "homes"
     }
 }
