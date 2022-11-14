@@ -1,6 +1,6 @@
 package com.github.m4kvn.spigot.homes.nms
 
-import com.github.m4kvn.spigot.homes.BukkitWrapper
+import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
 import com.github.m4kvn.spigot.homes.MockBukkitWrapper
 import com.github.m4kvn.spigot.homes.MockNmsWrapper
 import com.github.m4kvn.spigot.homes.MockWorld

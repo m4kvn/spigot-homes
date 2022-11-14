@@ -1,4 +1,4 @@
-package com.github.m4kvn.spigot.homes
+package com.github.m4kvn.spigot.homes.bukkit
 
 import org.bukkit.World
 import java.util.*

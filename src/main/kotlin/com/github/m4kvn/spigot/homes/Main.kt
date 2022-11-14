@@ -1,5 +1,7 @@
 package com.github.m4kvn.spigot.homes
 
+import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
+import com.github.m4kvn.spigot.homes.bukkit.ProductionBukkitWrapper
 import com.github.m4kvn.spigot.homes.nms.*
 import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.context.startKoin
