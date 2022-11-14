@@ -9,7 +9,7 @@ import org.koin.core.component.KoinComponent
 class HomesCommendExecutor : CommandExecutor, KoinComponent {
     private val mainCommand = HomeCommand()
     private val subCommandMap = hashMapOf<String, SubCommand>(
-        "set" to HomeSetCommand(),
+        "--set" to HomeSetSubCommand(),
     )
 
     override fun onCommand(
