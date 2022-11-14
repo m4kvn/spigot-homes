@@ -1,11 +1,13 @@
 package com.github.m4kvn.spigot.homes.nms
 
+import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
 import org.bukkit.Chunk
 import org.bukkit.World
 
 class DisplayEntityManager(
     private val nms: NmsWrapper,
+    private val bukkit: BukkitWrapper,
     private val dataStore: DisplayEntityDataStore,
 ) {
 
@@ -62,6 +64,13 @@ class DisplayEntityManager(
         spawnEntitiesIn(chunk)
     }
 
+    fun spawnEntities(playerHomeList: List<PlayerHome>) {
+        playerHomeList.forEach {
+            val world = bukkit.getWorld(it.location.worldUUID) ?: return@forEach
+            spawnEntities(world, it)
+        }
+    }
+
     fun despawnEntities(world: World, playerHome: PlayerHome) {
         val chunk = world.getChunkAt(
             playerHome.location.chunkX,
@@ -69,6 +78,13 @@ class DisplayEntityManager(
         )
         despawnEntitiesIn(chunk)
         removeEntities(playerHome)
+    }
+
+    fun despawnEntities(playerHomeList: List<PlayerHome>) {
+        playerHomeList.forEach {
+            val world = bukkit.getWorld(it.location.worldUUID) ?: return@forEach
+            despawnEntities(world, it)
+        }
     }
 
     private val PlayerHome.displayTextList: List<String>

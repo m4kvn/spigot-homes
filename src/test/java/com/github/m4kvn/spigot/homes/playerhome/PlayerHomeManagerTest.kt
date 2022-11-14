@@ -79,11 +79,10 @@ class PlayerHomeManagerTest : KoinTest {
             world.newRandomPlayerHomeDefault(),
         )
         dataStore.storeDefaultHomeList(defaultHomeList)
-        manager.load()
         assertTrue {
-            defaultHomeList.all {
-                manager.getDefaultHome(it.owner.playerUUID) == it
-            }
+            manager.load()
+                .filterIsInstance<PlayerHome.Default>()
+                .all { defaultHomeList.contains(it) }
         }
     }
 
@@ -169,11 +168,10 @@ class PlayerHomeManagerTest : KoinTest {
             .distinctBy { it.playerUUID }
         dataStore.storeOwnerList(ownerList)
         dataStore.storeNamedHomeList(namedHomeList)
-        manager.load()
         assertTrue {
-            namedHomeList.all {
-                manager.getNamedHome(it.owner.playerUUID, it.name) == it
-            }
+            manager.load()
+                .filterIsInstance<PlayerHome.Named>()
+                .all { namedHomeList.contains(it) }
         }
     }
 

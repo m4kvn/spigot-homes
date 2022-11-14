@@ -25,7 +25,7 @@ class DisplayEntityManagerTest : KoinTest {
         single<BukkitWrapper> { MockBukkitWrapper() }
         single<NmsWrapper> { MockNmsWrapper() }
         single { DisplayEntityDataStore() }
-        single { DisplayEntityManager(get(), get()) }
+        single { DisplayEntityManager(get(), get(), get()) }
         single { MockWorld() }
     }
 

@@ -24,15 +24,17 @@ class PlayerHomeManager(
             .map { it.owner }
             .distinctBy { it.playerUUID }
 
-    fun save() {
+    fun save(): List<PlayerHome> {
         dataStore.storeOwnerList(allOwners)
         dataStore.storeDefaultHomeList(defaultHomeList)
         dataStore.storeNamedHomeList(namedHomeList)
+        return allPlayerHome
     }
 
-    fun load() {
+    fun load(): List<PlayerHome> {
         val defaultHomeList = dataStore.restoreDefaultHomeList()
         val defaultMap = defaultHomeList.associateBy({ it.owner.playerUUID }) { it }
+        defaultHomeMap.clear()
         defaultHomeMap.putAll(defaultMap)
         val owners = dataStore.restoreOwnerList()
         val namedMap = owners.associateBy({ it.playerUUID }) { owner ->
@@ -40,7 +42,9 @@ class PlayerHomeManager(
             val namedHomeList = dataStore.restoreNamedHomeList(ownerUUID)
             HashMap(namedHomeList.associateBy({ it.name }) { it })
         }
+        namedHomeMap.clear()
         namedHomeMap.putAll(namedMap)
+        return allPlayerHome
     }
 
     fun addDefaultHome(playerHome: PlayerHome.Default): Response {

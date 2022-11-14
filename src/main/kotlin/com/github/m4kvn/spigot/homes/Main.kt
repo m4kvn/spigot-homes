@@ -18,6 +18,7 @@ import org.koin.dsl.module
 
 @Suppress("unused")
 class Main : JavaPlugin(), KoinComponent {
+    private val displayEntityManager by inject<DisplayEntityManager>()
     private val playerHomeDataStore by inject<PlayerHomeDataStore>()
     private val playerHomeManager by inject<PlayerHomeManager>()
 
@@ -28,7 +29,7 @@ class Main : JavaPlugin(), KoinComponent {
         single<PlayerHomeDataStore> { ProductionPlayerHomeDataStore(get()) }
         single { PlayerHomeManager(get()) }
         single { DisplayEntityDataStore() }
-        single { DisplayEntityManager(get(), get()) }
+        single { DisplayEntityManager(get(), get(), get()) }
     }
 
     override fun onLoad() {
@@ -40,11 +41,13 @@ class Main : JavaPlugin(), KoinComponent {
         register(HomesCommendExecutor())
         playerHomeDataStore.connectDatabase()
         playerHomeDataStore.createTables()
-        playerHomeManager.load()
+        val allPlayerHome = playerHomeManager.load()
+        displayEntityManager.spawnEntities(allPlayerHome)
     }
 
     override fun onDisable() {
-        playerHomeManager.save()
+        val allPlayerHome = playerHomeManager.save()
+        displayEntityManager.despawnEntities(allPlayerHome)
         playerHomeDataStore.disconnectDatabase()
     }
 
