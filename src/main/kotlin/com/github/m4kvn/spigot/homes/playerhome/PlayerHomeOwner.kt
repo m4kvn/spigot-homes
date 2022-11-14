@@ -1,4 +1,4 @@
-package com.github.m4kvn.spigot.homes.model
+package com.github.m4kvn.spigot.homes.playerhome
 
 import java.util.*
 

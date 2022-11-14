@@ -1,9 +1,9 @@
 package com.github.m4kvn.spigot.homes.command
 
-import com.github.m4kvn.spigot.homes.PlayerHomeManager
-import com.github.m4kvn.spigot.homes.model.PlayerHome
-import com.github.m4kvn.spigot.homes.model.PlayerHomeLocation
-import com.github.m4kvn.spigot.homes.model.PlayerHomeOwner
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeLocation
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeOwner
 import com.github.m4kvn.spigot.homes.nms.DisplayEntityManager
 import org.bukkit.entity.Player
 import org.koin.core.component.inject

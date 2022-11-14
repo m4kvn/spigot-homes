@@ -1,6 +1,5 @@
-package com.github.m4kvn.spigot.homes
+package com.github.m4kvn.spigot.homes.playerhome
 
-import com.github.m4kvn.spigot.homes.model.PlayerHome
 import java.util.*
 
 class PlayerHomeManager {

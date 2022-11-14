@@ -1,5 +1,6 @@
 package com.github.m4kvn.spigot.homes
 
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

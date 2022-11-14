@@ -1,6 +1,6 @@
 package com.github.m4kvn.spigot.homes.command
 
-import com.github.m4kvn.spigot.homes.PlayerHomeManager
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
 import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
 import org.bukkit.entity.Player
 import org.koin.core.component.inject

@@ -1,6 +1,6 @@
 package com.github.m4kvn.spigot.homes.nms
 
-import com.github.m4kvn.spigot.homes.model.PlayerHome
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
 import org.bukkit.Chunk
 import org.bukkit.World
 

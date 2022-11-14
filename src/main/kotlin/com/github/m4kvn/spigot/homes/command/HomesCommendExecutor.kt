@@ -1,8 +1,5 @@
-package com.github.m4kvn.spigot.homes
+package com.github.m4kvn.spigot.homes.command
 
-import com.github.m4kvn.spigot.homes.command.HomeCommand
-import com.github.m4kvn.spigot.homes.command.HomeSetCommand
-import com.github.m4kvn.spigot.homes.command.SubCommand
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender

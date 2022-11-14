@@ -1,7 +1,7 @@
 package com.github.m4kvn.spigot.homes.nms
 
-import com.github.m4kvn.spigot.homes.model.PlayerHome
-import com.github.m4kvn.spigot.homes.model.PlayerHomeLocation
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeLocation
 import java.util.*
 
 class DisplayEntityDataStore {

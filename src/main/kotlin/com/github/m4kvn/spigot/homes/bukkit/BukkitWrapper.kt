@@ -1,6 +1,6 @@
 package com.github.m4kvn.spigot.homes.bukkit
 
-import com.github.m4kvn.spigot.homes.model.PlayerHome
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
 import org.bukkit.Location
 import org.bukkit.World
 import java.util.*
