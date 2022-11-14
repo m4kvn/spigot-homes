@@ -54,11 +54,19 @@ class MockWorld(
         location: PlayerHomeLocation = newRandomPlayerHomeLocation(
             chunk = chunk,
         ),
-        homeName: String = "home_name",
+        homeName: String = "home_name_${UUID.randomUUID()}",
     ) = PlayerHome.Named(
         owner = owner,
         location = location,
         name = homeName,
+    )
+
+    fun newRandomPlayerHomeOwner(
+        ownerUUID: UUID = UUID.randomUUID(),
+        ownerName: String = "owner_name_${UUID.randomUUID()}",
+    ) = PlayerHomeOwner(
+        playerUUID = ownerUUID,
+        playerName = ownerName,
     )
 
     private fun newRandomPlayerHomeLocation(
@@ -71,13 +79,5 @@ class MockWorld(
         locationZ = Random.nextDouble(),
         chunkX = chunk.x,
         chunkZ = chunk.z,
-    )
-
-    private fun newRandomPlayerHomeOwner(
-        ownerUUID: UUID = UUID.randomUUID(),
-        ownerName: String = "owner_name",
-    ) = PlayerHomeOwner(
-        playerUUID = ownerUUID,
-        playerName = ownerName,
     )
 }
