@@ -1,6 +1,10 @@
-package com.github.m4kvn.spigot.homes
+package com.github.m4kvn.spigot.homes.playerhome
 
-import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
+import com.github.m4kvn.spigot.homes.MockPlayerHomeDataStore
+import com.github.m4kvn.spigot.homes.MockWorld
+import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
+import com.github.m4kvn.spigot.homes.playerhome.local.ProductionPlayerHomeDataStore
+import org.bukkit.plugin.java.JavaPlugin
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -9,6 +13,7 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import org.mockito.kotlin.mock
 import java.util.*
 import kotlin.random.Random
 import kotlin.test.assertEquals
@@ -18,22 +23,158 @@ import kotlin.test.assertTrue
 
 @Suppress("NonAsciiCharacters", "TestFunctionName")
 class PlayerHomeManagerTest : KoinTest {
+    private val dataStore by inject<PlayerHomeDataStore>()
     private val manager by inject<PlayerHomeManager>()
     private val world by inject<MockWorld>()
 
     private val testModule = module {
         single { MockWorld() }
-        single { PlayerHomeManager() }
+        single { mock<JavaPlugin>() }
+        single { PlayerHomeManager(get()) }
+        single { ProductionPlayerHomeDataStore(get()) }
+        single<PlayerHomeDataStore> { MockPlayerHomeDataStore(get()) }
     }
 
     @BeforeEach
     fun setup() {
         startKoin { modules(testModule) }
+        dataStore.connectDatabase()
+        dataStore.createTables()
     }
 
     @AfterEach
     fun teardown() {
+        dataStore.disconnectDatabase()
         stopKoin()
+    }
+
+    @Test
+    fun 追加されているデフォルトホームを正しく保存できる() {
+        val defaultHomeList = listOf(
+            world.newRandomPlayerHomeDefault(),
+            world.newRandomPlayerHomeDefault(),
+            world.newRandomPlayerHomeDefault(),
+            world.newRandomPlayerHomeDefault(),
+            world.newRandomPlayerHomeDefault(),
+        )
+        defaultHomeList.forEach {
+            manager.addDefaultHome(it)
+        }
+        manager.save()
+        assertTrue {
+            dataStore.restoreDefaultHomeList().count() == defaultHomeList.count()
+        }
+        assertTrue {
+            dataStore.restoreDefaultHomeList().all { defaultHomeList.contains(it) }
+        }
+    }
+
+    @Test
+    fun 保存されているデフォルトホームを正しく読み込める() {
+        val defaultHomeList = listOf(
+            world.newRandomPlayerHomeDefault(),
+            world.newRandomPlayerHomeDefault(),
+            world.newRandomPlayerHomeDefault(),
+            world.newRandomPlayerHomeDefault(),
+            world.newRandomPlayerHomeDefault(),
+        )
+        dataStore.storeDefaultHomeList(defaultHomeList)
+        manager.load()
+        assertTrue {
+            defaultHomeList.all {
+                manager.getDefaultHome(it.owner.playerUUID) == it
+            }
+        }
+    }
+
+    @Test
+    fun 追加した名前付きホームを正しく保存できる() {
+        val namedHomeList = listOf(
+            world.newRandomPlayerHomeNamed(),
+            world.newRandomPlayerHomeNamed(),
+            world.newRandomPlayerHomeNamed(),
+            world.newRandomPlayerHomeNamed(),
+            world.newRandomPlayerHomeNamed(),
+        )
+        namedHomeList.forEach {
+            manager.addNamedHome(it)
+        }
+        manager.save()
+        assertTrue {
+            namedHomeList.all { namedHome ->
+                val ownerUUID = namedHome.owner.playerUUID.toString()
+                val sameOwnerCount = namedHomeList.count { it.owner == namedHome.owner }
+                dataStore.restoreNamedHomeList(ownerUUID).count() == sameOwnerCount
+            }
+        }
+        assertTrue {
+            namedHomeList.all {
+                val ownerUUID = it.owner.playerUUID.toString()
+                dataStore.restoreNamedHomeList(ownerUUID).first() == it
+            }
+        }
+    }
+
+    @Test
+    fun 同じユーザーが追加した名前付きホームを正しく保存できる() {
+        val owner = world.newRandomPlayerHomeOwner()
+        val ownerUUID = owner.playerUUID.toString()
+        val sameOwnerNamedHomeList = listOf(
+            world.newRandomPlayerHomeNamed(owner = owner),
+            world.newRandomPlayerHomeNamed(owner = owner),
+            world.newRandomPlayerHomeNamed(owner = owner),
+            world.newRandomPlayerHomeNamed(owner = owner),
+            world.newRandomPlayerHomeNamed(owner = owner),
+        )
+        val namedHomeList = sameOwnerNamedHomeList + listOf(
+            world.newRandomPlayerHomeNamed(),
+            world.newRandomPlayerHomeNamed(),
+            world.newRandomPlayerHomeNamed(),
+            world.newRandomPlayerHomeNamed(),
+            world.newRandomPlayerHomeNamed(),
+        )
+        namedHomeList.forEach {
+            manager.addNamedHome(it)
+        }
+        manager.save()
+        assertTrue {
+            dataStore.restoreNamedHomeList(ownerUUID).count() == sameOwnerNamedHomeList.count()
+        }
+        assertTrue {
+            dataStore.restoreNamedHomeList(ownerUUID).all {
+                sameOwnerNamedHomeList.contains(it)
+            }
+        }
+    }
+
+    @Test
+    fun 保存されている名前付きホームを正しく読み込める() {
+        val owner = world.newRandomPlayerHomeOwner()
+        val sameOwnerNamedHomeList = listOf(
+            world.newRandomPlayerHomeNamed(owner = owner),
+            world.newRandomPlayerHomeNamed(owner = owner),
+            world.newRandomPlayerHomeNamed(owner = owner),
+            world.newRandomPlayerHomeNamed(owner = owner),
+            world.newRandomPlayerHomeNamed(owner = owner),
+        )
+        val namedHomeList = sameOwnerNamedHomeList + listOf(
+            world.newRandomPlayerHomeNamed(),
+            world.newRandomPlayerHomeNamed(),
+            world.newRandomPlayerHomeNamed(),
+            world.newRandomPlayerHomeNamed(),
+            world.newRandomPlayerHomeNamed(),
+        )
+        val ownerList = namedHomeList
+            .map { it.owner }
+            .distinctBy { it.playerUUID }
+        dataStore.storeOwnerList(ownerList)
+        dataStore.storeNamedHomeList(namedHomeList)
+        manager.load()
+        assertTrue {
+            namedHomeList.all {
+                manager.getNamedHome(it.owner.playerUUID, it.name) == it
+            }
+        }
     }
 
     @Test
