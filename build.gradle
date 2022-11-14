@@ -44,6 +44,10 @@ dependencies {
     implementation deps.kotlin
     implementation deps.m4kvn.spigot_nms
     implementation deps.koin.core
+    implementation 'org.xerial:sqlite-jdbc:3.39.3.0'
+    implementation "org.jetbrains.exposed:exposed-core:$version_exposed"
+    implementation "org.jetbrains.exposed:exposed-dao:$version_exposed"
+    implementation "org.jetbrains.exposed:exposed-jdbc:$version_exposed"
 
     testImplementation deps.spigot
     testImplementation 'org.jetbrains.kotlin:kotlin-reflect'
