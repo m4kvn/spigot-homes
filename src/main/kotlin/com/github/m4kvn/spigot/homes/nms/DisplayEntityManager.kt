@@ -11,7 +11,7 @@ class DisplayEntityManager(
 
     fun createEntities(
         world: World,
-        playerHome: PlayerHome
+        playerHome: PlayerHome,
     ): List<DisplayEntity> {
         val displayTextList = playerHome.displayTextList
         return displayTextList.mapIndexed { index, displayText ->
@@ -35,11 +35,21 @@ class DisplayEntityManager(
         )
     }
 
+    fun removeEntities(playerHome: PlayerHome) {
+        dataStore.removeDisplayEntities(playerHome)
+    }
+
     fun spawnEntitiesIn(chunk: Chunk) {
         if (!chunk.isLoaded) return
         dataStore
             .getDisplayEntitiesIn(chunk.x, chunk.z)
             .forEach { it.isDead = false }
+    }
+
+    fun despawnEntitiesIn(chunk: Chunk) {
+        dataStore
+            .getDisplayEntitiesIn(chunk.x, chunk.z)
+            .forEach { it.isDead = true }
     }
 
     fun spawnEntities(world: World, playerHome: PlayerHome) {
@@ -50,6 +60,15 @@ class DisplayEntityManager(
             playerHome.location.chunkZ,
         )
         spawnEntitiesIn(chunk)
+    }
+
+    fun despawnEntities(world: World, playerHome: PlayerHome) {
+        val chunk = world.getChunkAt(
+            playerHome.location.chunkX,
+            playerHome.location.chunkZ,
+        )
+        despawnEntitiesIn(chunk)
+        removeEntities(playerHome)
     }
 
     private val PlayerHome.displayTextList: List<String>

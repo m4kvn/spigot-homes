@@ -1,9 +1,9 @@
 package com.github.m4kvn.spigot.homes.nms
 
-import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
 import com.github.m4kvn.spigot.homes.MockBukkitWrapper
 import com.github.m4kvn.spigot.homes.MockNmsWrapper
 import com.github.m4kvn.spigot.homes.MockWorld
+import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -92,6 +92,28 @@ class DisplayEntityManagerTest : KoinTest {
     }
 
     @Test
+    fun 追加済みのホームデータを正しく削除できる() {
+        val playerHome = world.newRandomPlayerHomeNamed()
+        val entities = manager.createEntities(world, playerHome)
+        manager.addEntities(playerHome, entities)
+        assertEquals(
+            expected = entities,
+            actual = dataStore.getDisplayEntitiesIn(
+                playerHome.location.chunkX,
+                playerHome.location.chunkZ,
+            )
+        )
+        manager.removeEntities(playerHome)
+        assertEquals(
+            expected = emptyList(),
+            actual = dataStore.getDisplayEntitiesIn(
+                playerHome.location.chunkX,
+                playerHome.location.chunkZ,
+            )
+        )
+    }
+
+    @Test
     fun 読み込まれていないChunkのDisplayEntityがspawnされない() {
         val chunk = world.newMockChunk(isLoaded = false)
         val playerHome = world.newRandomPlayerHomeNamed()
@@ -116,6 +138,22 @@ class DisplayEntityManagerTest : KoinTest {
     }
 
     @Test
+    fun 指定されたChunk内にある追加済みのDisplayEntityをdespawnできる() {
+        val chunk = world.newMockChunk(isLoaded = true)
+        val playerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
+        val entities = manager.createEntities(world, playerHome)
+        manager.addEntities(playerHome, entities)
+        manager.spawnEntitiesIn(chunk)
+        assertTrue {
+            entities.none { it.isDead }
+        }
+        manager.despawnEntitiesIn(chunk)
+        assertTrue {
+            entities.all { it.isDead }
+        }
+    }
+
+    @Test
     fun 読み込まれていないChunkのDisplayEntityは追加されるがspawnされない() {
         val chunk = world.newMockChunk(isLoaded = false)
         val playerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
@@ -135,5 +173,35 @@ class DisplayEntityManagerTest : KoinTest {
         assertTrue {
             entities.none { it.isDead }
         }
+    }
+
+    @Test
+    fun 既にspawnしているDisplayEntityをdespawnしてから削除できる() {
+        val chunk = world.newMockChunk(isLoaded = true)
+        val playerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
+        val entities = manager.createEntities(world, playerHome)
+        manager.addEntities(playerHome, entities)
+        manager.spawnEntitiesIn(chunk)
+        assertTrue {
+            entities.none { it.isDead }
+        }
+        assertEquals(
+            expected = entities,
+            actual = dataStore.getDisplayEntitiesIn(
+                playerHome.location.chunkX,
+                playerHome.location.chunkZ,
+            )
+        )
+        manager.despawnEntities(world, playerHome)
+        assertTrue {
+            entities.all { it.isDead }
+        }
+        assertEquals(
+            expected = emptyList(),
+            actual = dataStore.getDisplayEntitiesIn(
+                playerHome.location.chunkX,
+                playerHome.location.chunkZ,
+            )
+        )
     }
 }
