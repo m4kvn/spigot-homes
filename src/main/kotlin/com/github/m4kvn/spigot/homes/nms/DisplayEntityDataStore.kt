@@ -8,6 +8,18 @@ class DisplayEntityDataStore {
     private val chunkMap = hashMapOf<ChunkIndex, Set<PlayerHomeIndex>>()
     private val displayMap = hashMapOf<PlayerHomeIndex, List<DisplayEntity>>()
 
+    private val PlayerHome.asPlayerHomeIndex: PlayerHomeIndex
+        get() = PlayerHomeIndex(
+            playerUUID = owner.playerUUID,
+            location = location,
+            homeName = name,
+        )
+    private val PlayerHome.asChunkIndex: ChunkIndex
+        get() = ChunkIndex(
+            x = location.chunkX,
+            z = location.chunkZ,
+        )
+
     fun getDisplayEntitiesIn(
         chunkX: Int,
         chunkZ: Int,
@@ -23,18 +35,19 @@ class DisplayEntityDataStore {
         playerHome: PlayerHome,
         entities: List<DisplayEntity>,
     ) {
-        val chunkIndex = ChunkIndex(
-            x = playerHome.location.chunkX,
-            z = playerHome.location.chunkZ,
-        )
-        val playerHomeIndex = PlayerHomeIndex(
-            playerUUID = playerHome.owner.playerUUID,
-            location = playerHome.location,
-            homeName = playerHome.name,
-        )
+        val chunkIndex = playerHome.asChunkIndex
+        val playerHomeIndex = playerHome.asPlayerHomeIndex
         val currentSet = chunkMap[chunkIndex] ?: setOf()
         chunkMap[chunkIndex] = currentSet + playerHomeIndex
         displayMap[playerHomeIndex] = entities
+    }
+
+    fun removeDisplayEntities(playerHome: PlayerHome) {
+        val chunkIndex = playerHome.asChunkIndex
+        val playerHomeIndex = playerHome.asPlayerHomeIndex
+        val currentSet = chunkMap[chunkIndex] ?: return
+        chunkMap[chunkIndex] = currentSet - playerHomeIndex
+        displayMap.remove(playerHomeIndex)
     }
 
     private data class PlayerHomeIndex(

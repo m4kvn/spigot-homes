@@ -1,8 +1,6 @@
 package com.github.m4kvn.spigot.homes.nms
 
-import com.github.m4kvn.spigot.homes.model.PlayerHome
-import com.github.m4kvn.spigot.homes.model.PlayerHomeLocation
-import com.github.m4kvn.spigot.homes.model.PlayerHomeOwner
+import com.github.m4kvn.spigot.homes.MockWorld
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -12,15 +10,16 @@ import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.mockito.kotlin.mock
-import java.util.*
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
 @Suppress("NonAsciiCharacters", "TestFunctionName")
 class DisplayEntityDataStoreTest : KoinTest {
     private val dataStore by inject<DisplayEntityDataStore>()
+    private val world by inject<MockWorld>()
 
     private val testModule = module {
+        single { MockWorld() }
         single { DisplayEntityDataStore() }
     }
 
@@ -36,30 +35,41 @@ class DisplayEntityDataStoreTest : KoinTest {
 
     @Test
     fun 追加したDisplayEntityを正しく取得できる() {
-        val owner = PlayerHomeOwner(
-            playerUUID = UUID.randomUUID(),
-            playerName = "player",
-        )
-        val location = PlayerHomeLocation(
-            worldUUID = UUID.randomUUID(),
-            worldName = "world",
-            locationX = Random.nextDouble(),
-            locationY = Random.nextDouble(),
-            locationZ = Random.nextDouble(),
-            chunkX = Random.nextInt(),
-            chunkZ = Random.nextInt(),
-        )
-        val playerHome = PlayerHome.Default(
-            owner = owner,
-            location = location,
-        )
-        val entities = listOf<DisplayEntity>(mock(), mock())
+        val playerHome = world.newRandomPlayerHomeNamed()
+        val entities = newRandomDisplayEntities()
         dataStore.addDisplayEntities(playerHome, entities)
-
-        val actual = dataStore.getDisplayEntitiesIn(
-            chunkX = location.chunkX,
-            chunkZ = location.chunkZ,
+        assertEquals(
+            expected = entities,
+            actual = dataStore.getDisplayEntitiesIn(
+                chunkX = playerHome.location.chunkX,
+                chunkZ = playerHome.location.chunkZ,
+            )
         )
-        assertEquals(entities, actual)
+    }
+
+    @Test
+    fun 登録済みのDisplayEntityを削除できる() {
+        val playerHome = world.newRandomPlayerHomeNamed()
+        val entities = newRandomDisplayEntities()
+        dataStore.addDisplayEntities(playerHome, entities)
+        assertEquals(
+            expected = entities,
+            actual = dataStore.getDisplayEntitiesIn(
+                chunkX = playerHome.location.chunkX,
+                chunkZ = playerHome.location.chunkZ,
+            )
+        )
+        dataStore.removeDisplayEntities(playerHome)
+        assertEquals(
+            expected = emptyList(),
+            actual = dataStore.getDisplayEntitiesIn(
+                chunkX = playerHome.location.chunkX,
+                chunkZ = playerHome.location.chunkZ,
+            )
+        )
+    }
+
+    private fun newRandomDisplayEntities(): List<DisplayEntity> {
+        return List(size = Random.nextInt(from = 1, until = 10)) { mock() }
     }
 }
