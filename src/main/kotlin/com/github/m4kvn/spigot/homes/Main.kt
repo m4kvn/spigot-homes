@@ -49,12 +49,12 @@ class Main : JavaPlugin(), KoinComponent {
         playerHomeDataStore.connectDatabase()
         playerHomeDataStore.createTables()
         val allPlayerHome = playerHomeManager.load()
-        displayEntityManager.spawnEntities(allPlayerHome)
+        displayEntityManager.addEntities(allPlayerHome)
     }
 
     override fun onDisable() {
         val allPlayerHome = playerHomeManager.save()
-        displayEntityManager.despawnEntities(allPlayerHome)
+        displayEntityManager.removeEntities(allPlayerHome)
         playerHomeDataStore.disconnectDatabase()
     }
 

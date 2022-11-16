@@ -41,8 +41,11 @@ class MockWorld(
     }
 
     fun newRandomPlayerHomeDefault(
+        chunk: Chunk = newMockChunk(),
         owner: PlayerHomeOwner = newRandomPlayerHomeOwner(),
-        location: PlayerHomeLocation = newRandomPlayerHomeLocation(),
+        location: PlayerHomeLocation = newRandomPlayerHomeLocation(
+            chunk = chunk,
+        ),
     ) = PlayerHome.Default(
         owner = owner,
         location = location,

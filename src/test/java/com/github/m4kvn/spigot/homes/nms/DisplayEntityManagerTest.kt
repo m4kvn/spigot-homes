@@ -40,168 +40,153 @@ class DisplayEntityManagerTest : KoinTest {
     }
 
     @Test
-    fun デフォルトのホームでDisplayEntityを正しく生成できる() {
-        val playerHome = world.newRandomPlayerHomeDefault()
-        val entities = manager.createEntities(world, playerHome)
-
-        entities[0].also {
-            val expected = "${playerHome.owner.playerName}'s"
-            val actual = it.text
-            assertEquals(expected, actual)
-        }
-        entities[1].also {
-            val expected = "default home"
-            val actual = it.text
-            assertEquals(expected, actual)
-        }
-    }
-
-    @Test
-    fun 名前付きのホームでDisplayEntityが正しく生成できる() {
-        val playerHome = world.newRandomPlayerHomeNamed()
-        val entities = manager.createEntities(world, playerHome)
-
-        entities[0].also {
-            val expected = "${playerHome.owner.playerName}'s"
-            val actual = it.text
-            assertEquals(expected, actual)
-        }
-        entities[1].also {
-            val expected = "home named"
-            val actual = it.text
-            assertEquals(expected, actual)
-        }
-        entities[2].also {
-            val expected = "<${playerHome.name}>"
-            val actual = it.text
-            assertEquals(expected, actual)
-        }
-    }
-
-    @Test
-    fun ホームデータを正しく追加できる() {
-        val playerHome = world.newRandomPlayerHomeNamed()
-        val entities = manager.createEntities(world, playerHome)
-        manager.addEntities(playerHome, entities)
-
-        val actual = dataStore.getDisplayEntitiesIn(
-            chunkX = playerHome.location.chunkX,
-            chunkZ = playerHome.location.chunkZ,
+    fun デフォルトのホームでDisplayEntityを正しく生成し追加できる() {
+        val chunk = world.newMockChunk(isLoaded = true)
+        val playerHome = world.newRandomPlayerHomeDefault(chunk = chunk)
+        manager.addEntities(world, playerHome)
+        val entities = dataStore.getDisplayEntities(playerHome)
+        assertTrue { entities.all { !it.isDead } }
+        assertTrue { entities.all { it.isVisible } }
+        assertEquals(
+            expected = 2,
+            actual = entities.size,
         )
-        assertEquals(entities, actual)
+        assertEquals(
+            expected = "${playerHome.owner.playerName}'s",
+            actual = entities[0].text,
+        )
+        assertEquals(
+            expected = "default home",
+            actual = entities[1].text,
+        )
+    }
+
+    @Test
+    fun 名前付きのホームでDisplayEntityを正しく生成し追加できる() {
+        val chunk = world.newMockChunk(isLoaded = true)
+        val playerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
+        manager.addEntities(world, playerHome)
+        val entities = dataStore.getDisplayEntities(playerHome)
+        assertTrue { entities.all { !it.isDead } }
+        assertTrue { entities.all { it.isVisible } }
+        assertEquals(
+            expected = 3,
+            actual = entities.size,
+        )
+        assertEquals(
+            expected = "${playerHome.owner.playerName}'s",
+            actual = entities[0].text,
+        )
+        assertEquals(
+            expected = "home named",
+            actual = entities[1].text,
+        )
+        assertEquals(
+            expected = "<${playerHome.name}>",
+            actual = entities[2].text,
+        )
     }
 
     @Test
     fun 追加済みのホームデータを正しく削除できる() {
         val playerHome = world.newRandomPlayerHomeNamed()
-        val entities = manager.createEntities(world, playerHome)
-        manager.addEntities(playerHome, entities)
-        assertEquals(
-            expected = entities,
-            actual = dataStore.getDisplayEntitiesIn(
-                playerHome.location.chunkX,
-                playerHome.location.chunkZ,
-            )
-        )
+        manager.addEntities(world, playerHome)
+        assertTrue { dataStore.getDisplayEntities(playerHome).isNotEmpty() }
         manager.removeEntities(playerHome)
         assertEquals(
             expected = emptyList(),
-            actual = dataStore.getDisplayEntitiesIn(
-                playerHome.location.chunkX,
-                playerHome.location.chunkZ,
-            )
+            actual = dataStore.getDisplayEntities(playerHome)
         )
     }
 
     @Test
     fun 読み込まれていないChunkのDisplayEntityがspawnされない() {
         val chunk = world.newMockChunk(isLoaded = false)
-        val playerHome = world.newRandomPlayerHomeNamed()
-        val entities = manager.createEntities(world, playerHome)
-        manager.addEntities(playerHome, entities)
-        manager.spawnEntitiesIn(chunk)
-        assertTrue {
-            entities.all { it.isDead }
-        }
+        val defaultPlayerHome = world.newRandomPlayerHomeDefault(chunk = chunk)
+        val namedPlayerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
+        manager.addEntities(world, defaultPlayerHome)
+        manager.addEntities(world, namedPlayerHome)
+        val entities = dataStore.getDisplayEntitiesIn(chunk.x, chunk.z)
+        assertTrue { entities.isNotEmpty() }
+        assertTrue { entities.all { it.isDead } }
     }
 
     @Test
     fun 読み込まれているChunkのDisplayEntityがspawnされる() {
-        val chunk = world.newMockChunk(isLoaded = true)
-        val playerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
-        val entities = manager.createEntities(world, playerHome)
-        manager.addEntities(playerHome, entities)
+        val chunk = world.newMockChunk(isLoaded = false)
+        val defaultPlayerHome = world.newRandomPlayerHomeDefault(chunk = chunk)
+        val namedPlayerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
+        manager.addEntities(world, defaultPlayerHome)
+        manager.addEntities(world, namedPlayerHome)
+        dataStore.getDisplayEntitiesIn(chunk.x, chunk.z).also {
+            assertTrue { it.isNotEmpty() }
+            assertTrue { it.all { it.isDead } }
+        }
         manager.spawnEntitiesIn(chunk)
-        assertTrue {
-            entities.none { it.isDead }
+        dataStore.getDisplayEntitiesIn(chunk.x, chunk.z).also {
+            assertTrue { it.isNotEmpty() }
+            assertTrue { it.all { !it.isDead } }
         }
     }
 
     @Test
     fun 指定されたChunk内にある追加済みのDisplayEntityをdespawnできる() {
         val chunk = world.newMockChunk(isLoaded = true)
-        val playerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
-        val entities = manager.createEntities(world, playerHome)
-        manager.addEntities(playerHome, entities)
-        manager.spawnEntitiesIn(chunk)
-        assertTrue {
-            entities.none { it.isDead }
+        val defaultPlayerHome = world.newRandomPlayerHomeDefault(chunk = chunk)
+        val namedPlayerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
+        manager.addEntities(world, defaultPlayerHome)
+        manager.addEntities(world, namedPlayerHome)
+        dataStore.getDisplayEntitiesIn(chunk.x, chunk.z).also {
+            assertTrue { it.isNotEmpty() }
+            assertTrue { it.all { !it.isDead } }
         }
         manager.despawnEntitiesIn(chunk)
-        assertTrue {
-            entities.all { it.isDead }
+        dataStore.getDisplayEntitiesIn(chunk.x, chunk.z).also {
+            assertTrue { it.isNotEmpty() }
+            assertTrue { it.all { it.isDead } }
         }
     }
 
     @Test
     fun 読み込まれていないChunkのDisplayEntityは追加されるがspawnされない() {
         val chunk = world.newMockChunk(isLoaded = false)
-        val playerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
-        manager.spawnEntities(world, playerHome)
+        val defaultPlayerHome = world.newRandomPlayerHomeDefault(chunk = chunk)
+        val namedPlayerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
+        manager.addEntities(world, defaultPlayerHome)
+        manager.addEntities(world, namedPlayerHome)
         val entities = dataStore.getDisplayEntitiesIn(chunk.x, chunk.z)
-        assertTrue {
-            entities.all { it.isDead }
-        }
+        assertTrue { entities.isNotEmpty() }
+        assertTrue { entities.all { it.isDead } }
     }
 
     @Test
     fun 読み込まれているChunkのDisplayEntityが追加されspawnされる() {
         val chunk = world.newMockChunk(isLoaded = true)
-        val playerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
-        manager.spawnEntities(world, playerHome)
+        val defaultPlayerHome = world.newRandomPlayerHomeDefault(chunk = chunk)
+        val namedPlayerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
+        manager.addEntities(world, defaultPlayerHome)
+        manager.addEntities(world, namedPlayerHome)
         val entities = dataStore.getDisplayEntitiesIn(chunk.x, chunk.z)
-        assertTrue {
-            entities.none { it.isDead }
-        }
+        assertTrue { entities.isNotEmpty() }
+        assertTrue { entities.all { !it.isDead } }
     }
 
     @Test
     fun 既にspawnしているDisplayEntityをdespawnしてから削除できる() {
         val chunk = world.newMockChunk(isLoaded = true)
-        val playerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
-        val entities = manager.createEntities(world, playerHome)
-        manager.addEntities(playerHome, entities)
-        manager.spawnEntitiesIn(chunk)
-        assertTrue {
-            entities.none { it.isDead }
+        val defaultPlayerHome = world.newRandomPlayerHomeDefault(chunk = chunk)
+        val namedPlayerHome = world.newRandomPlayerHomeNamed(chunk = chunk)
+        manager.addEntities(world, defaultPlayerHome)
+        manager.addEntities(world, namedPlayerHome)
+        dataStore.getDisplayEntitiesIn(chunk.x, chunk.z).also {
+            assertTrue { it.isNotEmpty() }
+            assertTrue { it.all { !it.isDead } }
         }
-        assertEquals(
-            expected = entities,
-            actual = dataStore.getDisplayEntitiesIn(
-                playerHome.location.chunkX,
-                playerHome.location.chunkZ,
-            )
-        )
-        manager.despawnEntities(playerHome)
-        assertTrue {
-            entities.all { it.isDead }
-        }
+        manager.removeEntities(defaultPlayerHome)
+        manager.removeEntities(namedPlayerHome)
         assertEquals(
             expected = emptyList(),
-            actual = dataStore.getDisplayEntitiesIn(
-                playerHome.location.chunkX,
-                playerHome.location.chunkZ,
-            )
+            actual = dataStore.getDisplayEntitiesIn(chunk.x, chunk.z),
         )
     }
 }

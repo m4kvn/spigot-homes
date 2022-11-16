@@ -11,7 +11,68 @@ class DisplayEntityManager(
     private val dataStore: DisplayEntityDataStore,
 ) {
 
-    fun createEntities(
+    private val PlayerHome.displayTextList: List<String>
+        get() = when (this) {
+            is PlayerHome.Default -> "${owner.playerName}'s\ndefault home"
+            is PlayerHome.Named -> "${owner.playerName}'s\nhome named\n<$name>"
+        }.split("\n")
+
+    fun spawnEntitiesIn(chunk: Chunk) {
+        dataStore
+            .getDisplayEntitiesIn(chunk.x, chunk.z)
+            .forEach { it.isDead = false }
+    }
+
+    fun despawnEntitiesIn(chunk: Chunk) {
+        dataStore
+            .getDisplayEntitiesIn(chunk.x, chunk.z)
+            .forEach { it.isDead = true }
+    }
+
+    fun addEntities(playerHomeList: List<PlayerHome>) {
+        playerHomeList.forEach { playerHome ->
+            val world = bukkit.getWorld(playerHome.location.worldUUID) ?: return@forEach
+            addEntities(world, playerHome)
+        }
+    }
+
+    fun addEntities(world: World, playerHome: PlayerHome) {
+        val entities = createEntities(world, playerHome)
+        dataStore.addDisplayEntities(
+            playerHome = playerHome,
+            entities = entities,
+        )
+        spawnEntities(world, playerHome)
+    }
+
+    fun removeEntities(playerHomeList: List<PlayerHome>) {
+        playerHomeList.forEach { playerHome ->
+            removeEntities(playerHome)
+        }
+    }
+
+    fun removeEntities(playerHome: PlayerHome) {
+        despawnEntities(playerHome)
+        dataStore.removeDisplayEntities(playerHome)
+    }
+
+    private fun spawnEntities(world: World, playerHome: PlayerHome) {
+        val chunk = world.getChunkAt(
+            playerHome.location.chunkX,
+            playerHome.location.chunkZ,
+        )
+        if (!chunk.isLoaded) return
+        dataStore
+            .getDisplayEntities(playerHome)
+            .forEach { it.isDead = false }
+    }
+
+    private fun despawnEntities(playerHome: PlayerHome) {
+        val entities = dataStore.getDisplayEntities(playerHome)
+        entities.forEach { it.isDead = true }
+    }
+
+    private fun createEntities(
         world: World,
         playerHome: PlayerHome,
     ): List<DisplayEntity> {
@@ -29,61 +90,4 @@ class DisplayEntityManager(
             )
         }
     }
-
-    fun addEntities(playerHome: PlayerHome, entities: List<DisplayEntity>) {
-        dataStore.addDisplayEntities(
-            playerHome = playerHome,
-            entities = entities,
-        )
-    }
-
-    fun removeEntities(playerHome: PlayerHome) {
-        dataStore.removeDisplayEntities(playerHome)
-    }
-
-    fun spawnEntitiesIn(chunk: Chunk) {
-        if (!chunk.isLoaded) return
-        dataStore
-            .getDisplayEntitiesIn(chunk.x, chunk.z)
-            .forEach { it.isDead = false }
-    }
-
-    fun despawnEntitiesIn(chunk: Chunk) {
-        dataStore
-            .getDisplayEntitiesIn(chunk.x, chunk.z)
-            .forEach { it.isDead = true }
-    }
-
-    fun spawnEntities(world: World, playerHome: PlayerHome) {
-        val entities = createEntities(world, playerHome)
-        addEntities(playerHome, entities)
-        val chunk = world.getChunkAt(
-            playerHome.location.chunkX,
-            playerHome.location.chunkZ,
-        )
-        spawnEntitiesIn(chunk)
-    }
-
-    fun spawnEntities(playerHomeList: List<PlayerHome>) {
-        playerHomeList.forEach {
-            val world = bukkit.getWorld(it.location.worldUUID) ?: return@forEach
-            spawnEntities(world, it)
-        }
-    }
-
-    fun despawnEntities(playerHome: PlayerHome) {
-        val entities = dataStore.getDisplayEntities(playerHome)
-        entities.forEach { it.isDead = true }
-        removeEntities(playerHome)
-    }
-
-    fun despawnEntities(playerHomeList: List<PlayerHome>) {
-        playerHomeList.forEach { despawnEntities(it) }
-    }
-
-    private val PlayerHome.displayTextList: List<String>
-        get() = when (this) {
-            is PlayerHome.Default -> "${owner.playerName}'s\ndefault home"
-            is PlayerHome.Named -> "${owner.playerName}'s\nhome named\n<$name>"
-        }.split("\n")
 }

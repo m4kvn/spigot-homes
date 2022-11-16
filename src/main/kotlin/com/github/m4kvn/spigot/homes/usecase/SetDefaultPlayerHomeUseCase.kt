@@ -30,9 +30,9 @@ class SetDefaultPlayerHomeUseCase(
         )
         val addResponse = homeManager.addDefaultHome(newPlayerHome)
         if (addResponse is PlayerHomeManager.Response.DefaultHomeAlreadyExists) {
-            displayManager.despawnEntities(addResponse.currentPlayerHome)
+            displayManager.removeEntities(addResponse.currentPlayerHome)
             homeManager.replaceDefaultHome(newPlayerHome)
         }
-        displayManager.spawnEntities(player.world, newPlayerHome)
+        displayManager.addEntities(player.world, newPlayerHome)
     }
 }
