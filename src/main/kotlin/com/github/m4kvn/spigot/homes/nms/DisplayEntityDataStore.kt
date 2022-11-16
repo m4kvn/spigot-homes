@@ -20,6 +20,11 @@ class DisplayEntityDataStore {
             z = location.chunkZ,
         )
 
+    fun getDisplayEntities(playerHome: PlayerHome): List<DisplayEntity> {
+        val homeIndex = playerHome.asPlayerHomeIndex
+        return displayMap[homeIndex] ?: emptyList()
+    }
+
     fun getDisplayEntitiesIn(
         chunkX: Int,
         chunkZ: Int,

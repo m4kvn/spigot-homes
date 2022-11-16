@@ -36,7 +36,7 @@ class HomeSetSubCommand : SubCommand {
         )
         val addResponse = homeManager.addDefaultHome(newPlayerHome)
         if (addResponse is PlayerHomeManager.Response.DefaultHomeAlreadyExists) {
-            displayManager.despawnEntities(player.world, addResponse.currentPlayerHome)
+            displayManager.despawnEntities(addResponse.currentPlayerHome)
             homeManager.replaceDefaultHome(newPlayerHome)
         }
         displayManager.spawnEntities(player.world, newPlayerHome)
@@ -62,7 +62,7 @@ class HomeSetSubCommand : SubCommand {
         )
         val addResponse = homeManager.addNamedHome(newPlayerHome)
         if (addResponse is PlayerHomeManager.Response.NamedHomeAlreadyExists) {
-            displayManager.despawnEntities(player.world, addResponse.currentPlayerHome)
+            displayManager.despawnEntities(addResponse.currentPlayerHome)
             homeManager.replaceNamedHome(newPlayerHome)
         }
         displayManager.spawnEntities(player.world, newPlayerHome)

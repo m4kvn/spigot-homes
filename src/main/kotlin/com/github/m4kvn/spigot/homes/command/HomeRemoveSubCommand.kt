@@ -18,7 +18,7 @@ class HomeRemoveSubCommand : SubCommand {
     private fun removeDefaultHome(player: Player): SubCommand.Response {
         val response = homeManager.removeDefaultHome(player.uniqueId)
         if (response is PlayerHomeManager.Response.Success) {
-            displayManager.despawnEntities(player.world, response.playerHome)
+            displayManager.despawnEntities(response.playerHome)
             return SubCommand.Response.Success
         }
         val message = "Your default home was not found."
@@ -28,7 +28,7 @@ class HomeRemoveSubCommand : SubCommand {
     private fun removeNamedHome(player: Player, homeName: String): SubCommand.Response {
         val response = homeManager.removeNamedHome(player.uniqueId, homeName)
         if (response is PlayerHomeManager.Response.Success) {
-            displayManager.despawnEntities(player.world, response.playerHome)
+            displayManager.despawnEntities(response.playerHome)
             return SubCommand.Response.Success
         }
         val message = "Your home named <$homeName> was not found."

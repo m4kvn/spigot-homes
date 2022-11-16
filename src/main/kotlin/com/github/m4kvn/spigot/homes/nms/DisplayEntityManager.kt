@@ -71,20 +71,14 @@ class DisplayEntityManager(
         }
     }
 
-    fun despawnEntities(world: World, playerHome: PlayerHome) {
-        val chunk = world.getChunkAt(
-            playerHome.location.chunkX,
-            playerHome.location.chunkZ,
-        )
-        despawnEntitiesIn(chunk)
+    fun despawnEntities(playerHome: PlayerHome) {
+        val entities = dataStore.getDisplayEntities(playerHome)
+        entities.forEach { it.isDead = true }
         removeEntities(playerHome)
     }
 
     fun despawnEntities(playerHomeList: List<PlayerHome>) {
-        playerHomeList.forEach {
-            val world = bukkit.getWorld(it.location.worldUUID) ?: return@forEach
-            despawnEntities(world, it)
-        }
+        playerHomeList.forEach { despawnEntities(it) }
     }
 
     private val PlayerHome.displayTextList: List<String>

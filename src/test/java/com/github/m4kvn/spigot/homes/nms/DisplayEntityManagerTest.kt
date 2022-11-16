@@ -192,7 +192,7 @@ class DisplayEntityManagerTest : KoinTest {
                 playerHome.location.chunkZ,
             )
         )
-        manager.despawnEntities(world, playerHome)
+        manager.despawnEntities(playerHome)
         assertTrue {
             entities.all { it.isDead }
         }
