@@ -4,7 +4,9 @@ import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeLocation
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeOwner
 import org.bukkit.Chunk
+import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.entity.Player
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -25,6 +27,17 @@ class MockWorld(
         return requireNotNull(chunkMap[x to z])
     }
 
+    fun newMockPlayer(
+        playerUUID: UUID = UUID.randomUUID(),
+        playerName: String = "player_name_$playerUUID",
+        playerLocation: Location = newMockLocation(),
+    ) = mock<Player>().apply {
+        whenever(world) doReturn this@MockWorld
+        whenever(name) doReturn playerName
+        whenever(uniqueId) doReturn playerUUID
+        whenever(location) doReturn playerLocation
+    }
+
     fun newMockChunk(
         x: Int = Random.nextInt(),
         z: Int = Random.nextInt(),
@@ -42,7 +55,8 @@ class MockWorld(
 
     fun newRandomPlayerHomeDefault(
         chunk: Chunk = newMockChunk(),
-        owner: PlayerHomeOwner = newRandomPlayerHomeOwner(),
+        player: Player = newMockPlayer(),
+        owner: PlayerHomeOwner = newRandomPlayerHomeOwner(player),
         location: PlayerHomeLocation = newRandomPlayerHomeLocation(
             chunk = chunk,
         ),
@@ -65,12 +79,21 @@ class MockWorld(
     )
 
     fun newRandomPlayerHomeOwner(
-        ownerUUID: UUID = UUID.randomUUID(),
-        ownerName: String = "owner_name_${UUID.randomUUID()}",
+        player: Player = newMockPlayer(),
     ) = PlayerHomeOwner(
-        playerUUID = ownerUUID,
-        playerName = ownerName,
+        playerUUID = player.uniqueId,
+        playerName = player.name,
     )
+
+    fun newMockLocation(
+        locationChunk: Chunk = newMockChunk(),
+    ) = mock<Location>().apply {
+        whenever(x) doReturn Random.nextDouble()
+        whenever(y) doReturn Random.nextDouble()
+        whenever(z) doReturn Random.nextDouble()
+        whenever(world) doReturn this@MockWorld
+        whenever(chunk) doReturn locationChunk
+    }
 
     private fun newRandomPlayerHomeLocation(
         chunk: Chunk = newMockChunk(),
