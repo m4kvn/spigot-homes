@@ -76,6 +76,13 @@ class PlayerHomeManager(
         return namedHomeMap[ownerUUID]?.get(homeName)
     }
 
+    fun getPlayerHomeListData(ownerUUID: UUID): PlayerHomeListData {
+        return PlayerHomeListData(
+            default = getDefaultHome(ownerUUID),
+            namedList = namedHomeMap[ownerUUID]?.values?.toList() ?: emptyList(),
+        )
+    }
+
     fun removeDefaultHome(ownerUUID: UUID): Response {
         val playerHome = defaultHomeMap.remove(ownerUUID)
             ?: return Response.NotFoundDefaultHome

@@ -11,6 +11,7 @@ class HomesCommendExecutor : CommandExecutor, KoinComponent {
     private val subCommandMap = hashMapOf(
         "--set" to HomeSetSubCommand(),
         "--remove" to HomeRemoveSubCommand(),
+        "--list" to HomeListCommand(),
     )
 
     override fun onCommand(

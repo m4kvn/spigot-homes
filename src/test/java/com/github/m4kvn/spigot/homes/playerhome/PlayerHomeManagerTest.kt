@@ -337,4 +337,28 @@ class PlayerHomeManagerTest : KoinTest {
             )
         )
     }
+
+    @Test
+    fun 指定したプレイヤーのホームのリストを取得できる() {
+        val player = world.newMockPlayer()
+        val defaultHome = world.newRandomPlayerHomeDefault(player = player)
+        manager.addDefaultHome(defaultHome)
+        val namedHomeList = listOf(
+            world.newRandomPlayerHomeNamed(player = player),
+            world.newRandomPlayerHomeNamed(player = player),
+            world.newRandomPlayerHomeNamed(player = player),
+            world.newRandomPlayerHomeNamed(player = player),
+        )
+        namedHomeList.forEach {
+            manager.addNamedHome(it)
+        }
+        val data = manager.getPlayerHomeListData(player.uniqueId)
+        assertEquals(
+            expected = defaultHome,
+            actual = data.default,
+        )
+        assertTrue {
+            data.namedList.all { namedHomeList.contains(it) }
+        }
+    }
 }
