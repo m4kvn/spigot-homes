@@ -40,6 +40,10 @@ class ProductionPlayerHomeDataStore(
                 LocalPlayerHomeDefault,
                 LocalPlayerHomeNamed,
             )
+            SchemaUtils.createMissingTablesAndColumns(
+                LocalPlayerHomeDefault,
+                LocalPlayerHomeNamed,
+            )
         }
     }
 
@@ -81,6 +85,8 @@ class ProductionPlayerHomeDataStore(
                 this[LocalPlayerHomeDefault.locationX] = playerHome.location.locationX
                 this[LocalPlayerHomeDefault.locationY] = playerHome.location.locationY
                 this[LocalPlayerHomeDefault.locationZ] = playerHome.location.locationZ
+                this[LocalPlayerHomeDefault.locationYaw] = playerHome.location.locationYaw
+                this[LocalPlayerHomeDefault.locationPitch] = playerHome.location.locationPitch
                 this[LocalPlayerHomeDefault.chunkX] = playerHome.location.chunkX
                 this[LocalPlayerHomeDefault.chunkZ] = playerHome.location.chunkZ
                 this[LocalPlayerHomeDefault.isPrivate] = playerHome.isPrivate
@@ -102,6 +108,8 @@ class ProductionPlayerHomeDataStore(
                         locationX = it[LocalPlayerHomeDefault.locationX],
                         locationY = it[LocalPlayerHomeDefault.locationY],
                         locationZ = it[LocalPlayerHomeDefault.locationZ],
+                        locationYaw = it[LocalPlayerHomeDefault.locationYaw],
+                        locationPitch = it[LocalPlayerHomeDefault.locationPitch],
                         chunkX = it[LocalPlayerHomeDefault.chunkX],
                         chunkZ = it[LocalPlayerHomeDefault.chunkZ],
                     ),
@@ -125,6 +133,8 @@ class ProductionPlayerHomeDataStore(
                 this[LocalPlayerHomeNamed.locationX] = playerHome.location.locationX
                 this[LocalPlayerHomeNamed.locationY] = playerHome.location.locationY
                 this[LocalPlayerHomeNamed.locationZ] = playerHome.location.locationZ
+                this[LocalPlayerHomeNamed.locationYaw] = playerHome.location.locationYaw
+                this[LocalPlayerHomeNamed.locationPitch] = playerHome.location.locationPitch
                 this[LocalPlayerHomeNamed.chunkX] = playerHome.location.chunkX
                 this[LocalPlayerHomeNamed.chunkZ] = playerHome.location.chunkZ
                 this[LocalPlayerHomeNamed.isPrivate] = playerHome.isPrivate
@@ -149,6 +159,8 @@ class ProductionPlayerHomeDataStore(
                             locationX = it[LocalPlayerHomeNamed.locationX],
                             locationY = it[LocalPlayerHomeNamed.locationY],
                             locationZ = it[LocalPlayerHomeNamed.locationZ],
+                            locationPitch = it[LocalPlayerHomeNamed.locationPitch],
+                            locationYaw = it[LocalPlayerHomeNamed.locationYaw],
                             chunkX = it[LocalPlayerHomeNamed.chunkX],
                             chunkZ = it[LocalPlayerHomeNamed.chunkZ],
                         ),

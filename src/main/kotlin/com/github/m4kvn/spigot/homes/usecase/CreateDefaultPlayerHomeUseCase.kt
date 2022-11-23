@@ -19,6 +19,8 @@ class CreateDefaultPlayerHomeUseCase : UseCase {
                 locationX = player.location.x,
                 locationY = player.location.y,
                 locationZ = player.location.z,
+                locationYaw = player.location.yaw,
+                locationPitch = player.location.pitch,
                 chunkX = player.location.chunk.x,
                 chunkZ = player.location.chunk.z,
             ),

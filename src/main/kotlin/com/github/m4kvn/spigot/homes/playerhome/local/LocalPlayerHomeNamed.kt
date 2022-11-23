@@ -14,4 +14,6 @@ object LocalPlayerHomeNamed : LongIdTable() {
     val locationZ = double(name = "location_z")
     val isPrivate = bool(name = "is_private")
     val homeName = varchar(name = "home_name", length = 50)
+    val locationYaw = float(name = "location_yaw").default(0f)
+    val locationPitch = float(name = "location_pitch").default(0f)
 }

@@ -19,6 +19,8 @@ class CreateNamedPlayerHomeUseCase : UseCase {
                 locationX = player.location.x,
                 locationY = player.location.y,
                 locationZ = player.location.z,
+                locationPitch = player.location.pitch,
+                locationYaw = player.location.yaw,
                 chunkX = player.location.chunk.x,
                 chunkZ = player.location.chunk.z,
             ),

@@ -18,6 +18,8 @@ class ProductionBukkitWrapper : BukkitWrapper {
             playerHome.location.locationX,
             playerHome.location.locationY,
             playerHome.location.locationZ,
+            playerHome.location.locationYaw,
+            playerHome.location.locationPitch,
         )
     }
 }

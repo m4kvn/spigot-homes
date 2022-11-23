@@ -92,6 +92,8 @@ class MockWorld(
         whenever(x) doReturn Random.nextDouble()
         whenever(y) doReturn Random.nextDouble()
         whenever(z) doReturn Random.nextDouble()
+        whenever(pitch) doReturn Random.nextFloat()
+        whenever(yaw) doReturn Random.nextFloat()
         whenever(world) doReturn this@MockWorld
         whenever(chunk) doReturn locationChunk
     }
@@ -104,6 +106,8 @@ class MockWorld(
         locationX = Random.nextDouble(),
         locationY = Random.nextDouble(),
         locationZ = Random.nextDouble(),
+        locationPitch = Random.nextFloat(),
+        locationYaw = Random.nextFloat(),
         chunkX = chunk.x,
         chunkZ = chunk.z,
     )

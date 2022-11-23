@@ -8,6 +8,8 @@ data class PlayerHomeLocation(
     val locationX: Double,
     val locationY: Double,
     val locationZ: Double,
+    val locationYaw: Float,
+    val locationPitch: Float,
     val chunkX: Int,
     val chunkZ: Int,
 )
