@@ -9,6 +9,7 @@ import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
 import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.playerhome.local.ProductionPlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.usecase.CreateDefaultPlayerHomeUseCase
+import com.github.m4kvn.spigot.homes.usecase.CreateNamedPlayerHomeUseCase
 import com.github.m4kvn.spigot.homes.usecase.SetDefaultPlayerHomeUseCase
 import com.github.m4kvn.spigot.homes.usecase.SetNamedPlayerHomeUseCase
 import org.bukkit.command.CommandExecutor
@@ -37,8 +38,9 @@ class Main : JavaPlugin(), KoinComponent {
 
     private val useCaseModule = module {
         factory { CreateDefaultPlayerHomeUseCase() }
+        factory { CreateNamedPlayerHomeUseCase() }
         factory { SetDefaultPlayerHomeUseCase(get(), get(), get()) }
-        factory { SetNamedPlayerHomeUseCase(get(), get()) }
+        factory { SetNamedPlayerHomeUseCase(get(), get(), get()) }
     }
 
     override fun onLoad() {

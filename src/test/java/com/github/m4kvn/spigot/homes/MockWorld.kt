@@ -67,7 +67,8 @@ class MockWorld(
 
     fun newRandomPlayerHomeNamed(
         chunk: Chunk = newMockChunk(),
-        owner: PlayerHomeOwner = newRandomPlayerHomeOwner(),
+        player: Player = newMockPlayer(),
+        owner: PlayerHomeOwner = newRandomPlayerHomeOwner(player),
         location: PlayerHomeLocation = newRandomPlayerHomeLocation(
             chunk = chunk,
         ),
