@@ -17,6 +17,12 @@ class HomesCommendExecutor : CommandExecutor, KoinComponent {
         "--list" to HomeListCommand(),
         "--previous" to HomePreviousCommand(),
     )
+    private val aliasMap = hashMapOf(
+        "-s" to "--set",
+        "-r" to "--remove",
+        "-l" to "--list",
+        "-p" to "--previous",
+    )
 
     override fun onCommand(
         sender: CommandSender,
@@ -26,7 +32,8 @@ class HomesCommendExecutor : CommandExecutor, KoinComponent {
     ): Boolean {
         if (sender !is Player) return false
         if (args.isNotEmpty()) {
-            val subCommand = subCommandMap[args[0]]
+            val flag = aliasMap[args[0]] ?: args[0]
+            val subCommand = subCommandMap[flag]
             if (subCommand != null) {
                 val response = subCommand.execute(sender, args.drop(1))
                 if (response is SubCommand.Response.Failed) {

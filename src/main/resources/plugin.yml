@@ -6,4 +6,4 @@ commands:
   homes:
     description: This is Homes command.
     usage: /<command>
-    aliases: ['home']
+    aliases: ['home', "h"]
