@@ -44,10 +44,14 @@ class Main : JavaPlugin(), KoinComponent {
     private val useCaseModule = module {
         factory { CreateDefaultPlayerHomeUseCase() }
         factory { CreateNamedPlayerHomeUseCase() }
+        factory { CreateTemporaryPlayerHomeUseCase() }
         factory { SetDefaultPlayerHomeUseCase(get(), get(), get()) }
         factory { SetNamedPlayerHomeUseCase(get(), get(), get()) }
         factory { RemoveDefaultHomeUseCase(get(), get()) }
         factory { RemoveNamedHomeUseCase(get(), get()) }
+        factory { TeleportPlayerHomeUseCase(get(), get(), get()) }
+        factory { GetTemporaryPlayerHomeUseCase(get()) }
+        factory { SaveTemporaryPlayerHomeUseCase(get()) }
     }
 
     override fun onLoad() {
