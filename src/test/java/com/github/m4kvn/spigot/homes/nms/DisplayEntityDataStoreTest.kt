@@ -1,6 +1,6 @@
 package com.github.m4kvn.spigot.homes.nms
 
-import com.github.m4kvn.spigot.homes.MockWorld
+import com.github.m4kvn.spigot.homes.MockBukkitWrapper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -16,10 +16,10 @@ import kotlin.test.assertEquals
 @Suppress("NonAsciiCharacters", "TestFunctionName")
 class DisplayEntityDataStoreTest : KoinTest {
     private val dataStore by inject<DisplayEntityDataStore>()
-    private val world by inject<MockWorld>()
+    private val bukkitWrapper by inject<MockBukkitWrapper>()
 
     private val testModule = module {
-        single { MockWorld() }
+        single { MockBukkitWrapper() }
         single { DisplayEntityDataStore() }
     }
 
@@ -35,6 +35,7 @@ class DisplayEntityDataStoreTest : KoinTest {
 
     @Test
     fun 追加したDisplayEntityを正しく取得できる() {
+        val world = bukkitWrapper.newMockWorld()
         val playerHome = world.newRandomPlayerHomeNamed()
         val entities = newRandomDisplayEntities()
         dataStore.addDisplayEntities(playerHome, entities)
@@ -49,6 +50,7 @@ class DisplayEntityDataStoreTest : KoinTest {
 
     @Test
     fun 登録済みのDisplayEntityを削除できる() {
+        val world = bukkitWrapper.newMockWorld()
         val playerHome = world.newRandomPlayerHomeNamed()
         val entities = newRandomDisplayEntities()
         dataStore.addDisplayEntities(playerHome, entities)

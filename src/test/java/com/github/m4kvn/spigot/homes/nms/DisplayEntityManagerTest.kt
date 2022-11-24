@@ -22,11 +22,12 @@ class DisplayEntityManagerTest : KoinTest {
     private val world by inject<MockWorld>()
 
     private val testModule = module {
-        single<BukkitWrapper> { MockBukkitWrapper() }
+        val mockBukkitWrapper = MockBukkitWrapper()
+        single<BukkitWrapper> { mockBukkitWrapper }
+        single { mockBukkitWrapper.newMockWorld() }
         single<NmsWrapper> { MockNmsWrapper() }
         single { DisplayEntityDataStore() }
         single { DisplayEntityManager(get(), get(), get()) }
-        single { MockWorld() }
     }
 
     @BeforeEach

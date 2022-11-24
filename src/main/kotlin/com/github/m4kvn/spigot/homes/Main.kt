@@ -8,6 +8,7 @@ import com.github.m4kvn.spigot.homes.messenger.Messenger
 import com.github.m4kvn.spigot.homes.messenger.ProductionMessenger
 import com.github.m4kvn.spigot.homes.nms.*
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
+import com.github.m4kvn.spigot.homes.playerhome.TemporaryPlayerHomeManager
 import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.playerhome.local.ProductionPlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.usecase.*
@@ -33,6 +34,7 @@ class Main : JavaPlugin(), KoinComponent {
         single<NmsWrapper> { ProductionNmsWrapper() }
         single<PlayerHomeDataStore> { ProductionPlayerHomeDataStore(get()) }
         single<Messenger> { ProductionMessenger(get()) }
+        single { TemporaryPlayerHomeManager() }
         single { PlayerHomeManager(get(), get()) }
         single { DisplayEntityDataStore() }
         single { DisplayEntityManager(get(), get(), get()) }
@@ -42,10 +44,14 @@ class Main : JavaPlugin(), KoinComponent {
     private val useCaseModule = module {
         factory { CreateDefaultPlayerHomeUseCase() }
         factory { CreateNamedPlayerHomeUseCase() }
+        factory { CreateTemporaryPlayerHomeUseCase() }
         factory { SetDefaultPlayerHomeUseCase(get(), get(), get()) }
         factory { SetNamedPlayerHomeUseCase(get(), get(), get()) }
         factory { RemoveDefaultHomeUseCase(get(), get()) }
         factory { RemoveNamedHomeUseCase(get(), get()) }
+        factory { TeleportPlayerHomeUseCase(get(), get(), get()) }
+        factory { GetTemporaryPlayerHomeUseCase(get()) }
+        factory { SaveTemporaryPlayerHomeUseCase(get()) }
     }
 
     override fun onLoad() {

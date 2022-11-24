@@ -1,13 +1,13 @@
 package com.github.m4kvn.spigot.homes.command
 
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
-import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
+import com.github.m4kvn.spigot.homes.usecase.TeleportPlayerHomeUseCase
 import org.bukkit.entity.Player
 import org.koin.core.component.inject
 
 class HomeCommand : SubCommand {
+    private val teleportPlayerHomeUseCase by inject<TeleportPlayerHomeUseCase>()
     private val homeManager by inject<PlayerHomeManager>()
-    private val bukkit by inject<BukkitWrapper>()
 
     override fun execute(player: Player, args: List<String>): SubCommand.Response {
         return if (args.isNotEmpty())
@@ -21,8 +21,7 @@ class HomeCommand : SubCommand {
             val message = "You have not yet set default home."
             return SubCommand.Response.Failed(message)
         }
-        val location = bukkit.getLocation(playerHome)
-        player.teleport(location)
+        teleportPlayerHomeUseCase(player, playerHome)
         return SubCommand.Response.Success
     }
 
@@ -32,8 +31,7 @@ class HomeCommand : SubCommand {
             val message = "You have not yet set home named <$homeName>."
             return SubCommand.Response.Failed(message)
         }
-        val location = bukkit.getLocation(playerHome)
-        player.teleport(location)
+        teleportPlayerHomeUseCase(player, playerHome)
         return SubCommand.Response.Success
     }
 }

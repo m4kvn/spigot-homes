@@ -14,8 +14,8 @@ import java.util.*
 import kotlin.random.Random
 
 class MockWorld(
-    private val uuid: UUID = UUID.randomUUID(),
-    private val name: String = "mock_world",
+    private val uuid: UUID,
+    private val name: String,
 ) : World by mock() {
     private val chunkMap = hashMapOf<Pair<Int, Int>, Chunk>()
 
@@ -31,12 +31,12 @@ class MockWorld(
         playerUUID: UUID = UUID.randomUUID(),
         playerName: String = "player_name_$playerUUID",
         playerLocation: Location = newMockLocation(),
-    ) = mock<Player>().apply {
-        whenever(world) doReturn this@MockWorld
-        whenever(name) doReturn playerName
-        whenever(uniqueId) doReturn playerUUID
-        whenever(location) doReturn playerLocation
-    }
+    ) = MockPlayer(
+        initialWorld = this,
+        initialLocation = playerLocation,
+        playerUUID = playerUUID,
+        playerName = playerName,
+    )
 
     fun newMockChunk(
         x: Int = Random.nextInt(),
@@ -88,12 +88,17 @@ class MockWorld(
 
     fun newMockLocation(
         locationChunk: Chunk = newMockChunk(),
+        locationX: Double = Random.nextDouble(),
+        locationY: Double = Random.nextDouble(),
+        locationZ: Double = Random.nextDouble(),
+        locationPitch: Float = Random.nextFloat(),
+        locationYaw: Float = Random.nextFloat(),
     ) = mock<Location>().apply {
-        whenever(x) doReturn Random.nextDouble()
-        whenever(y) doReturn Random.nextDouble()
-        whenever(z) doReturn Random.nextDouble()
-        whenever(pitch) doReturn Random.nextFloat()
-        whenever(yaw) doReturn Random.nextFloat()
+        whenever(x) doReturn locationX
+        whenever(y) doReturn locationY
+        whenever(z) doReturn locationZ
+        whenever(pitch) doReturn locationPitch
+        whenever(yaw) doReturn locationYaw
         whenever(world) doReturn this@MockWorld
         whenever(chunk) doReturn locationChunk
     }

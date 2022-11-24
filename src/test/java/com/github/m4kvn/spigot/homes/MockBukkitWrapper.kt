@@ -9,24 +9,40 @@ import org.mockito.kotlin.mock
 import java.util.*
 
 class MockBukkitWrapper : BukkitWrapper {
-    private val worldMap = hashMapOf<UUID, World>()
+    private val worldMap = hashMapOf<UUID, MockWorld>()
 
-    override fun getWorld(uuid: UUID): World {
-        val world = MockWorld(uuid = uuid)
-        worldMap[uuid] = world
-        return world
+    override fun getWorld(uuid: UUID): World? {
+        return worldMap[uuid]
     }
 
     override fun getLocation(playerHome: PlayerHome): Location {
-        return Location(
-            getWorld(playerHome.location.worldUUID),
-            playerHome.location.locationX,
-            playerHome.location.locationY,
-            playerHome.location.locationZ,
+        val world = worldMap[playerHome.location.worldUUID] ?: newMockWorld()
+        return world.newMockLocation(
+            locationChunk = world.newMockChunk(
+                x = playerHome.location.chunkX,
+                z = playerHome.location.chunkZ,
+            ),
+            locationX = playerHome.location.locationX,
+            locationY = playerHome.location.locationY,
+            locationZ = playerHome.location.locationZ,
+            locationPitch = playerHome.location.locationPitch,
+            locationYaw = playerHome.location.locationYaw,
         )
     }
 
     override fun getScheduler(): BukkitScheduler {
         return mock()
+    }
+
+    fun newMockWorld(
+        worldUUID: UUID = UUID.randomUUID(),
+        worldName: String = "mock_world_${worldUUID}",
+    ): MockWorld {
+        val world = MockWorld(
+            uuid = worldUUID,
+            name = worldName,
+        )
+        worldMap[worldUUID] = world
+        return world
     }
 }

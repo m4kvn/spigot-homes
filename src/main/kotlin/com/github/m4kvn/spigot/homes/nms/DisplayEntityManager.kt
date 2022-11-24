@@ -11,11 +11,12 @@ class DisplayEntityManager(
     private val dataStore: DisplayEntityDataStore,
 ) {
 
-    private val PlayerHome.displayTextList: List<String>
+    private val PlayerHome.displayTextList: List<String>?
         get() = when (this) {
             is PlayerHome.Default -> "${owner.playerName}'s\ndefault home"
             is PlayerHome.Named -> "${owner.playerName}'s\nhome named\n<$name>"
-        }.split("\n")
+            is PlayerHome.Temporary -> null
+        }?.split("\n")
 
     fun spawnEntitiesIn(chunk: Chunk) {
         dataStore
@@ -76,7 +77,7 @@ class DisplayEntityManager(
         world: World,
         playerHome: PlayerHome,
     ): List<DisplayEntity> {
-        val displayTextList = playerHome.displayTextList
+        val displayTextList = playerHome.displayTextList ?: return emptyList()
         return displayTextList.mapIndexed { index, displayText ->
             nms.newDisplayEntity(
                 world = world,
