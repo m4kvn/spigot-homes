@@ -19,5 +19,12 @@ sealed class PlayerHome {
         override val name: String,
         override val isPrivate: Boolean = false,
     ) : PlayerHome()
+
+    data class Temporary(
+        override val owner: PlayerHomeOwner,
+        override val location: PlayerHomeLocation,
+        override val name: String? = null,
+        override val isPrivate: Boolean = true,
+    ) : PlayerHome()
 }
 
