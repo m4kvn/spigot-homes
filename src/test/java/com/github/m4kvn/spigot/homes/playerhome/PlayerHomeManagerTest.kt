@@ -1,5 +1,6 @@
 package com.github.m4kvn.spigot.homes.playerhome
 
+import com.github.m4kvn.spigot.homes.MockBukkitWrapper
 import com.github.m4kvn.spigot.homes.MockPlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.MockWorld
 import com.github.m4kvn.spigot.homes.messenger.Messenger
@@ -29,7 +30,7 @@ class PlayerHomeManagerTest : KoinTest {
     private val world by inject<MockWorld>()
 
     private val testModule = module {
-        single { MockWorld() }
+        single { MockBukkitWrapper().newMockWorld() }
         single<JavaPlugin> { mock() }
         single<Messenger> { mock() }
         single { PlayerHomeManager(get(), get()) }

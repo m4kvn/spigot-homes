@@ -40,12 +40,13 @@ internal class SetNamedPlayerHomeUseCaseTest : KoinTest {
 
 
     private val testModule = module {
+        val mockBukkitWrapper = MockBukkitWrapper()
         single<JavaPlugin> { mock() }
         single<NmsWrapper> { MockNmsWrapper() }
-        single<BukkitWrapper> { MockBukkitWrapper() }
+        single<BukkitWrapper> { mockBukkitWrapper }
         single<PlayerHomeDataStore> { MockPlayerHomeDataStore(get()) }
         single<Messenger> { mock() }
-        single { MockWorld() }
+        single { mockBukkitWrapper.newMockWorld() }
         single { DisplayEntityDataStore() }
         single { DisplayEntityManager(get(), get(), get()) }
         single { PlayerHomeManager(get(), get()) }
