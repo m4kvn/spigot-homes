@@ -4,6 +4,7 @@ import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.scheduler.BukkitScheduler
 import java.util.*
 
 class ProductionBukkitWrapper : BukkitWrapper {
@@ -21,5 +22,9 @@ class ProductionBukkitWrapper : BukkitWrapper {
             playerHome.location.locationYaw,
             playerHome.location.locationPitch,
         )
+    }
+
+    override fun getScheduler(): BukkitScheduler {
+        return Bukkit.getScheduler()
     }
 }
