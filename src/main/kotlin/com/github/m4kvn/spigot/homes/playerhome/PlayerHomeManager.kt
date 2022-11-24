@@ -1,9 +1,13 @@
 package com.github.m4kvn.spigot.homes.playerhome
 
+import com.github.m4kvn.spigot.homes.color
+import com.github.m4kvn.spigot.homes.messenger.Messenger
 import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
+import org.bukkit.ChatColor
 import java.util.*
 
 class PlayerHomeManager(
+    private val messenger: Messenger,
     private val dataStore: PlayerHomeDataStore,
 ) {
     private val ownerMap = hashMapOf<UUID, PlayerHomeOwner>()
@@ -25,9 +29,11 @@ class PlayerHomeManager(
             .distinctBy { it.playerUUID }
 
     fun save(): List<PlayerHome> {
+        messenger.sendConsoleMessage(MESSAGE_SAVE_STARTED)
         dataStore.storeOwnerList(allOwners)
         dataStore.storeDefaultHomeList(defaultHomeList)
         dataStore.storeNamedHomeList(namedHomeList)
+        messenger.sendConsoleMessage(MESSAGE_SAVE_COMPLETED)
         return allPlayerHome
     }
 
@@ -120,5 +126,10 @@ class PlayerHomeManager(
 
         object NotFoundDefaultHome : Response()
         object NotFoundNamedHome : Response()
+    }
+
+    companion object {
+        private val MESSAGE_SAVE_STARTED = color(ChatColor.DARK_AQUA) { "Started saving player's home data...." }
+        private val MESSAGE_SAVE_COMPLETED = color(ChatColor.YELLOW) { "Completed saving the player's home data." }
     }
 }

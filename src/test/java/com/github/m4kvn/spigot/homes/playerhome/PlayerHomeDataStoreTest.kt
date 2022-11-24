@@ -2,6 +2,7 @@ package com.github.m4kvn.spigot.homes.playerhome
 
 import com.github.m4kvn.spigot.homes.MockPlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.MockWorld
+import com.github.m4kvn.spigot.homes.messenger.Messenger
 import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.playerhome.local.ProductionPlayerHomeDataStore
 import org.bukkit.plugin.java.JavaPlugin
@@ -24,8 +25,9 @@ class PlayerHomeDataStoreTest : KoinTest {
 
     private val testModule = module {
         single { MockWorld() }
-        single { mock<JavaPlugin>() }
-        single { PlayerHomeManager(get()) }
+        single<JavaPlugin> { mock() }
+        single<Messenger> { mock() }
+        single { PlayerHomeManager(get(), get()) }
         single { ProductionPlayerHomeDataStore(get()) }
         single<PlayerHomeDataStore> { MockPlayerHomeDataStore(get()) }
     }

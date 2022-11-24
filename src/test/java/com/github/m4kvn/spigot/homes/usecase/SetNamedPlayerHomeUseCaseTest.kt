@@ -5,6 +5,7 @@ import com.github.m4kvn.spigot.homes.MockNmsWrapper
 import com.github.m4kvn.spigot.homes.MockPlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.MockWorld
 import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
+import com.github.m4kvn.spigot.homes.messenger.Messenger
 import com.github.m4kvn.spigot.homes.nms.DisplayEntityDataStore
 import com.github.m4kvn.spigot.homes.nms.DisplayEntityManager
 import com.github.m4kvn.spigot.homes.nms.NmsWrapper
@@ -43,10 +44,11 @@ internal class SetNamedPlayerHomeUseCaseTest : KoinTest {
         single<NmsWrapper> { MockNmsWrapper() }
         single<BukkitWrapper> { MockBukkitWrapper() }
         single<PlayerHomeDataStore> { MockPlayerHomeDataStore(get()) }
+        single<Messenger> { mock() }
         single { MockWorld() }
         single { DisplayEntityDataStore() }
         single { DisplayEntityManager(get(), get(), get()) }
-        single { PlayerHomeManager(get()) }
+        single { PlayerHomeManager(get(), get()) }
         single { ProductionPlayerHomeDataStore(get()) }
         single { CreateNamedPlayerHomeUseCase() }
         single { SetNamedPlayerHomeUseCase(get(), get(), get()) }

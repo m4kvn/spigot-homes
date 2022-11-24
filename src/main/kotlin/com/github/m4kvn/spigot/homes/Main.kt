@@ -33,7 +33,7 @@ class Main : JavaPlugin(), KoinComponent {
         single<NmsWrapper> { ProductionNmsWrapper() }
         single<PlayerHomeDataStore> { ProductionPlayerHomeDataStore(get()) }
         single<Messenger> { ProductionMessenger(get()) }
-        single { PlayerHomeManager(get()) }
+        single { PlayerHomeManager(get(), get()) }
         single { DisplayEntityDataStore() }
         single { DisplayEntityManager(get(), get(), get()) }
         single { AutoSaveScheduler(get(), get(), get(), get()) }
