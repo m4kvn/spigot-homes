@@ -21,13 +21,6 @@ repositories {
     mavenCentral()
     maven { url = 'https://jitpack.io' }
     maven {
-        url = uri('https://maven.pkg.github.com/m4kvn/spigot-nms')
-        credentials {
-            username = github.username
-            password = github.password
-        }
-    }
-    maven {
         name = 'spigotmc-repo'
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
@@ -42,7 +35,6 @@ dependencies {
     compileOnly deps.log4j
     compileOnly deps.snakeyaml
     implementation deps.kotlin
-    implementation deps.m4kvn.spigot_nms
     implementation deps.koin.core
     implementation 'org.xerial:sqlite-jdbc:3.39.3.0'
     implementation "org.jetbrains.exposed:exposed-core:$version_exposed"
