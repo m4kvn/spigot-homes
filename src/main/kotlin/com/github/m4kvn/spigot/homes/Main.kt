@@ -4,6 +4,8 @@ import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
 import com.github.m4kvn.spigot.homes.bukkit.ProductionBukkitWrapper
 import com.github.m4kvn.spigot.homes.command.HomesCommendExecutor
 import com.github.m4kvn.spigot.homes.listener.ChunkListener
+import com.github.m4kvn.spigot.homes.messenger.Messenger
+import com.github.m4kvn.spigot.homes.messenger.ProductionMessenger
 import com.github.m4kvn.spigot.homes.nms.*
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
 import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
@@ -22,12 +24,14 @@ class Main : JavaPlugin(), KoinComponent {
     private val displayEntityManager by inject<DisplayEntityManager>()
     private val playerHomeDataStore by inject<PlayerHomeDataStore>()
     private val playerHomeManager by inject<PlayerHomeManager>()
+    private val messenger by inject<Messenger>()
 
     private val module = module {
         single<JavaPlugin> { this@Main }
         single<BukkitWrapper> { ProductionBukkitWrapper() }
         single<NmsWrapper> { ProductionNmsWrapper() }
         single<PlayerHomeDataStore> { ProductionPlayerHomeDataStore(get()) }
+        single<Messenger> { ProductionMessenger(get()) }
         single { PlayerHomeManager(get()) }
         single { DisplayEntityDataStore() }
         single { DisplayEntityManager(get(), get(), get()) }
@@ -44,6 +48,7 @@ class Main : JavaPlugin(), KoinComponent {
 
     override fun onLoad() {
         startKoin { modules(module, useCaseModule) }
+        messenger.sendConsoleMessage("onLoaded")
     }
 
     override fun onEnable() {
@@ -53,12 +58,14 @@ class Main : JavaPlugin(), KoinComponent {
         playerHomeDataStore.createTables()
         val allPlayerHome = playerHomeManager.load()
         displayEntityManager.addEntities(allPlayerHome)
+        messenger.sendConsoleMessage("onEnabled")
     }
 
     override fun onDisable() {
         val allPlayerHome = playerHomeManager.save()
         displayEntityManager.removeEntities(allPlayerHome)
         playerHomeDataStore.disconnectDatabase()
+        messenger.sendConsoleMessage("onDisabled")
     }
 
     private fun register(executor: CommandExecutor) {
