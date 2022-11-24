@@ -4,6 +4,7 @@ import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
 import com.github.m4kvn.spigot.homes.bukkit.ProductionBukkitWrapper
 import com.github.m4kvn.spigot.homes.command.HomesCommendExecutor
 import com.github.m4kvn.spigot.homes.listener.ChunkListener
+import com.github.m4kvn.spigot.homes.listener.PlayerRespawnListener
 import com.github.m4kvn.spigot.homes.messenger.Messenger
 import com.github.m4kvn.spigot.homes.messenger.ProductionMessenger
 import com.github.m4kvn.spigot.homes.nms.*
@@ -61,6 +62,7 @@ class Main : JavaPlugin(), KoinComponent {
 
     override fun onEnable() {
         register(ChunkListener())
+        register(PlayerRespawnListener())
         register(HomesCommendExecutor())
         playerHomeDataStore.connectDatabase()
         playerHomeDataStore.createTables()
