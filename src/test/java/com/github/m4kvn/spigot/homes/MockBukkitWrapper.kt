@@ -4,6 +4,8 @@ import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.scheduler.BukkitScheduler
+import org.mockito.kotlin.mock
 import java.util.*
 
 class MockBukkitWrapper : BukkitWrapper {
@@ -22,5 +24,9 @@ class MockBukkitWrapper : BukkitWrapper {
             playerHome.location.locationY,
             playerHome.location.locationZ,
         )
+    }
+
+    override fun getScheduler(): BukkitScheduler {
+        return mock()
     }
 }

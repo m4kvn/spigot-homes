@@ -24,6 +24,7 @@ class Main : JavaPlugin(), KoinComponent {
     private val displayEntityManager by inject<DisplayEntityManager>()
     private val playerHomeDataStore by inject<PlayerHomeDataStore>()
     private val playerHomeManager by inject<PlayerHomeManager>()
+    private val autoSaveScheduler by inject<AutoSaveScheduler>()
     private val messenger by inject<Messenger>()
 
     private val module = module {
@@ -35,6 +36,7 @@ class Main : JavaPlugin(), KoinComponent {
         single { PlayerHomeManager(get()) }
         single { DisplayEntityDataStore() }
         single { DisplayEntityManager(get(), get(), get()) }
+        single { AutoSaveScheduler(get(), get(), get(), get()) }
     }
 
     private val useCaseModule = module {
@@ -58,10 +60,12 @@ class Main : JavaPlugin(), KoinComponent {
         playerHomeDataStore.createTables()
         val allPlayerHome = playerHomeManager.load()
         displayEntityManager.addEntities(allPlayerHome)
+        autoSaveScheduler.run()
         messenger.sendConsoleMessage("onEnabled")
     }
 
     override fun onDisable() {
+        autoSaveScheduler.cancel()
         val allPlayerHome = playerHomeManager.save()
         displayEntityManager.removeEntities(allPlayerHome)
         playerHomeDataStore.disconnectDatabase()
