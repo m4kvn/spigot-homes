@@ -8,6 +8,7 @@ import com.github.m4kvn.spigot.homes.messenger.Messenger
 import com.github.m4kvn.spigot.homes.messenger.ProductionMessenger
 import com.github.m4kvn.spigot.homes.nms.*
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
+import com.github.m4kvn.spigot.homes.playerhome.TemporaryPlayerHomeManager
 import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.playerhome.local.ProductionPlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.usecase.*
@@ -33,6 +34,7 @@ class Main : JavaPlugin(), KoinComponent {
         single<NmsWrapper> { ProductionNmsWrapper() }
         single<PlayerHomeDataStore> { ProductionPlayerHomeDataStore(get()) }
         single<Messenger> { ProductionMessenger(get()) }
+        single { TemporaryPlayerHomeManager() }
         single { PlayerHomeManager(get(), get()) }
         single { DisplayEntityDataStore() }
         single { DisplayEntityManager(get(), get(), get()) }
