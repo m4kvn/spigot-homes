@@ -16,10 +16,10 @@ class SetNamedPlayerHomeUseCase(
         val addResponse = homeManager.addNamedHome(newPlayerHome)
         if (addResponse is PlayerHomeManager.Response.NamedHomeAlreadyExists) {
             val currentPlayerHome = addResponse.currentPlayerHome
-            displayManager.removeEntities(currentPlayerHome)
+            displayManager.despawnEntities(currentPlayerHome)
             homeManager.replaceNamedHome(newPlayerHome)
         }
-        displayManager.addEntities(player.world, newPlayerHome)
+        displayManager.spawnEntities(player.world, newPlayerHome)
         return newPlayerHome
     }
 }

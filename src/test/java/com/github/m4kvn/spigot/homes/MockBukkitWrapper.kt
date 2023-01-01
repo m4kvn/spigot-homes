@@ -17,11 +17,10 @@ class MockBukkitWrapper : BukkitWrapper {
 
     override fun getLocation(playerHome: PlayerHome): Location {
         val world = worldMap[playerHome.location.worldUUID] ?: newMockWorld()
+        val homeChunk = playerHome.location.chunk
+        val chunk = world.getChunkAt(homeChunk.x, homeChunk.z)
         return world.newMockLocation(
-            locationChunk = world.newMockChunk(
-                x = playerHome.location.chunkX,
-                z = playerHome.location.chunkZ,
-            ),
+            locationChunk = chunk,
             locationX = playerHome.location.locationX,
             locationY = playerHome.location.locationY,
             locationZ = playerHome.location.locationZ,

@@ -1,6 +1,7 @@
 package com.github.m4kvn.spigot.homes.usecase
 
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeChunk
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeLocation
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeOwner
 import org.bukkit.entity.Player
@@ -21,8 +22,11 @@ class CreateTemporaryPlayerHomeUseCase : UseCase {
                 locationZ = player.location.z,
                 locationYaw = player.location.yaw,
                 locationPitch = player.location.pitch,
-                chunkX = player.location.chunk.x,
-                chunkZ = player.location.chunk.z,
+                chunk = PlayerHomeChunk(
+                    x = player.location.chunk.x,
+                    z = player.location.chunk.z,
+                    worldUID = player.world.uid,
+                )
             ),
         )
     }

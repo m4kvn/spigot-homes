@@ -1,6 +1,6 @@
 package com.github.m4kvn.spigot.homes.messenger
 
-import com.github.m4kvn.spigot.homes.color
+import com.github.m4kvn.spigot.homes.appendMessage
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
@@ -10,7 +10,10 @@ class ProductionMessenger(
 ) : Messenger {
 
     override fun sendPrefixMessage(sender: CommandSender, message: String) {
-        sender.sendMessage("${color(ChatColor.AQUA) { "[${plugin.name}]" }} $message")
+        sender.sendMessage(buildString {
+            appendMessage(ChatColor.AQUA) { "[${plugin.name}]" }
+            append(" $message")
+        })
     }
 
     override fun sendConsoleMessage(message: String) {

@@ -1,21 +1,15 @@
 package com.github.m4kvn.spigot.homes.playerhome
 
-import com.github.m4kvn.spigot.homes.MockBukkitWrapper
-import com.github.m4kvn.spigot.homes.MockPlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.MockWorld
-import com.github.m4kvn.spigot.homes.messenger.Messenger
 import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
-import com.github.m4kvn.spigot.homes.playerhome.local.ProductionPlayerHomeDataStore
-import org.bukkit.plugin.java.JavaPlugin
+import com.github.m4kvn.spigot.homes.testModule
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import org.mockito.kotlin.mock
 import java.util.*
 import kotlin.random.Random
 import kotlin.test.assertEquals
@@ -24,19 +18,10 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @Suppress("NonAsciiCharacters", "TestFunctionName")
-class PlayerHomeManagerTest : KoinTest {
+class ProductionPlayerHomeManagerTest : KoinTest {
     private val dataStore by inject<PlayerHomeDataStore>()
     private val manager by inject<PlayerHomeManager>()
     private val world by inject<MockWorld>()
-
-    private val testModule = module {
-        single { MockBukkitWrapper().newMockWorld() }
-        single<JavaPlugin> { mock() }
-        single<Messenger> { mock() }
-        single { PlayerHomeManager(get(), get()) }
-        single { ProductionPlayerHomeDataStore(get()) }
-        single<PlayerHomeDataStore> { MockPlayerHomeDataStore(get()) }
-    }
 
     @BeforeEach
     fun setup() {
@@ -81,12 +66,19 @@ class PlayerHomeManagerTest : KoinTest {
             world.newRandomPlayerHomeDefault(),
             world.newRandomPlayerHomeDefault(),
         )
+
         dataStore.storeDefaultHomeList(defaultHomeList)
-        assertTrue {
-            manager.load()
-                .filterIsInstance<PlayerHome.Default>()
-                .all { defaultHomeList.contains(it) }
-        }
+        assertEquals(
+            expected = defaultHomeList.sortedBy { it.hashCode() },
+            actual = dataStore.restoreDefaultHomeList().sortedBy { it.hashCode() },
+        )
+
+        manager.load()
+
+        assertEquals(
+            expected = defaultHomeList.sortedBy { it.hashCode() },
+            actual = manager.getAllHomeList().sortedBy { it.hashCode() }
+        )
     }
 
     @Test

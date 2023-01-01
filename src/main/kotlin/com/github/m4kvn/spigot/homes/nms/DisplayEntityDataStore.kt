@@ -1,68 +1,48 @@
 package com.github.m4kvn.spigot.homes.nms
 
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
-import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeLocation
-import java.util.*
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeChunk
 
-class DisplayEntityDataStore {
-    private val chunkMap = hashMapOf<ChunkIndex, Set<PlayerHomeIndex>>()
-    private val displayMap = hashMapOf<PlayerHomeIndex, List<DisplayEntity>>()
+interface DisplayEntityDataStore {
 
-    private val PlayerHome.asPlayerHomeIndex: PlayerHomeIndex
-        get() = PlayerHomeIndex(
-            playerUUID = owner.playerUUID,
-            location = location,
-            homeName = name,
-        )
-    private val PlayerHome.asChunkIndex: ChunkIndex
-        get() = ChunkIndex(
-            x = location.chunkX,
-            z = location.chunkZ,
-        )
+    /**
+     * 保存されている全てのDisplayEntityを取得する
+     */
+    fun getDisplayEntities(): List<DisplayEntity>
 
-    fun getDisplayEntities(playerHome: PlayerHome): List<DisplayEntity> {
-        val homeIndex = playerHome.asPlayerHomeIndex
-        return displayMap[homeIndex] ?: emptyList()
-    }
+    /**
+     * 指定したホームに対応するDisplayEntityのListを取得する
+     */
+    fun getDisplayEntities(home: PlayerHome): List<DisplayEntity>
 
-    fun getDisplayEntitiesIn(
-        chunkX: Int,
-        chunkZ: Int,
-    ): List<DisplayEntity> {
-        val chunkIndex = ChunkIndex(chunkX, chunkZ)
-        val homeIndexSet = chunkMap[chunkIndex] ?: return emptyList()
-        return homeIndexSet
-            .mapNotNull { displayMap[it] }
-            .flatten()
-    }
+    /**
+     * 指定したチャンクに対応するDisplayEntityのListを取得する
+     */
+    fun getDisplayEntitiesIn(chunk: PlayerHomeChunk): List<DisplayEntity>
 
-    fun addDisplayEntities(
-        playerHome: PlayerHome,
-        entities: List<DisplayEntity>,
-    ) {
-        val chunkIndex = playerHome.asChunkIndex
-        val playerHomeIndex = playerHome.asPlayerHomeIndex
-        val currentSet = chunkMap[chunkIndex] ?: setOf()
-        chunkMap[chunkIndex] = currentSet + playerHomeIndex
-        displayMap[playerHomeIndex] = entities
-    }
+    /**
+     * 指定したホームに対応するDisplayEntityのListを追加する
+     */
+    fun addDisplayEntities(home: PlayerHome, entities: List<DisplayEntity>)
 
-    fun removeDisplayEntities(playerHome: PlayerHome) {
-        val chunkIndex = playerHome.asChunkIndex
-        val playerHomeIndex = playerHome.asPlayerHomeIndex
-        val currentSet = chunkMap[chunkIndex] ?: return
-        chunkMap[chunkIndex] = currentSet - playerHomeIndex
-        displayMap.remove(playerHomeIndex)
-    }
+    /**
+     * 指定したチャンクに対応するDisplayEntityを全て削除する
+     *
+     * @return 削除したDisplayEntityのListを返し、何も削除しなかった場合は空のListを返す
+     */
+    fun removeDisplayEntitiesIn(chunk: PlayerHomeChunk): List<DisplayEntity>
 
-    private data class PlayerHomeIndex(
-        val playerUUID: UUID,
-        val location: PlayerHomeLocation,
-        val homeName: String?,
-    )
+    /**
+     * 指定したホームに対応するDisplayEntityを全て削除する
+     *
+     * @return 削除したDisplayEntityのListを返し、何も削除しなかった場合は空のListを返す
+     */
+    fun removeDisplayEntities(home: PlayerHome): List<DisplayEntity>
 
-    private data class ChunkIndex(
-        val x: Int,
-        val z: Int,
-    )
+    /**
+     * 全てのDisplayEntityを削除する
+     *
+     * @return 削除したDisplayEntityのListを返す
+     */
+    fun removeAllDisplayEntities(): List<DisplayEntity>
 }

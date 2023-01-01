@@ -1,6 +1,7 @@
 package com.github.m4kvn.spigot.homes
 
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeChunk
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeLocation
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeOwner
 import org.bukkit.Chunk
@@ -113,7 +114,6 @@ class MockWorld(
         locationZ = Random.nextDouble(),
         locationPitch = Random.nextFloat(),
         locationYaw = Random.nextFloat(),
-        chunkX = chunk.x,
-        chunkZ = chunk.z,
+        chunk = PlayerHomeChunk(chunk.x, chunk.z, chunk.world.uid)
     )
 }

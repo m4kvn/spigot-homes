@@ -13,7 +13,7 @@ class RemoveNamedHomeUseCase(
     operator fun invoke(player: Player, homeName: String): PlayerHome? {
         val response = homeManager.removeNamedHome(player.uniqueId, homeName)
         if (response !is PlayerHomeManager.Response.Success) return null
-        displayManager.removeEntities(response.playerHome)
+        displayManager.despawnEntities(response.playerHome)
         return response.playerHome
     }
 }
