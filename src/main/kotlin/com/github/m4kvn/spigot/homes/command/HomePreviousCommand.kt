@@ -1,6 +1,6 @@
 package com.github.m4kvn.spigot.homes.command
 
-import com.github.m4kvn.spigot.homes.appendMessage
+import com.github.m4kvn.spigot.homes.messenger.appendMessage
 import com.github.m4kvn.spigot.homes.usecase.GetTemporaryPlayerHomeUseCase
 import com.github.m4kvn.spigot.homes.usecase.TeleportPlayerHomeUseCase
 import org.bukkit.ChatColor

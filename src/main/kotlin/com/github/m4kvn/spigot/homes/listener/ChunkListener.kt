@@ -2,7 +2,7 @@ package com.github.m4kvn.spigot.homes.listener
 
 import com.github.m4kvn.spigot.homes.nms.DisplayEntityManager
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
-import com.github.m4kvn.spigot.homes.sendConsoleMessage
+import com.github.m4kvn.spigot.homes.messenger.sendConsoleMessage
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.world.ChunkLoadEvent

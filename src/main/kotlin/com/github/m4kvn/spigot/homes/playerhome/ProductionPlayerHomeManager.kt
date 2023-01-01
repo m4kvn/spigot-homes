@@ -1,8 +1,8 @@
 package com.github.m4kvn.spigot.homes.playerhome
 
 import com.github.m4kvn.spigot.homes.asPlayerHomeChunk
-import com.github.m4kvn.spigot.homes.appendMessage
-import com.github.m4kvn.spigot.homes.sendConsole
+import com.github.m4kvn.spigot.homes.messenger.appendMessage
+import com.github.m4kvn.spigot.homes.messenger.sendConsole
 import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
 import org.bukkit.ChatColor
 import org.bukkit.Chunk

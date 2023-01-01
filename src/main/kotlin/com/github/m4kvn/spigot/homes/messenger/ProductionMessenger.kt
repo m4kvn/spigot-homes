@@ -1,6 +1,5 @@
 package com.github.m4kvn.spigot.homes.messenger
 
-import com.github.m4kvn.spigot.homes.appendMessage
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
