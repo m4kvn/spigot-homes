@@ -1,8 +1,7 @@
 package com.github.m4kvn.spigot.homes
 
-import org.bukkit.ChatColor
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeChunk
+import org.bukkit.Chunk
 
-inline fun color(
-    color: ChatColor,
-    string: () -> String,
-) = "${color}${string()}${ChatColor.RESET}"
+inline val Chunk.asPlayerHomeChunk: PlayerHomeChunk
+    get() = PlayerHomeChunk(x, z, world.uid)

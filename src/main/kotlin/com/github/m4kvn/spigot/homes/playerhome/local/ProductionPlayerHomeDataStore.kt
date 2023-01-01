@@ -1,6 +1,7 @@
 package com.github.m4kvn.spigot.homes.playerhome.local
 
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeChunk
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeLocation
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeOwner
 import org.bukkit.plugin.java.JavaPlugin
@@ -87,8 +88,8 @@ class ProductionPlayerHomeDataStore(
                 this[LocalPlayerHomeDefault.locationZ] = playerHome.location.locationZ
                 this[LocalPlayerHomeDefault.locationYaw] = playerHome.location.locationYaw
                 this[LocalPlayerHomeDefault.locationPitch] = playerHome.location.locationPitch
-                this[LocalPlayerHomeDefault.chunkX] = playerHome.location.chunkX
-                this[LocalPlayerHomeDefault.chunkZ] = playerHome.location.chunkZ
+                this[LocalPlayerHomeDefault.chunkX] = playerHome.location.chunk.x
+                this[LocalPlayerHomeDefault.chunkZ] = playerHome.location.chunk.z
                 this[LocalPlayerHomeDefault.isPrivate] = playerHome.isPrivate
             }
         }
@@ -110,8 +111,11 @@ class ProductionPlayerHomeDataStore(
                         locationZ = it[LocalPlayerHomeDefault.locationZ],
                         locationYaw = it[LocalPlayerHomeDefault.locationYaw],
                         locationPitch = it[LocalPlayerHomeDefault.locationPitch],
-                        chunkX = it[LocalPlayerHomeDefault.chunkX],
-                        chunkZ = it[LocalPlayerHomeDefault.chunkZ],
+                        chunk = PlayerHomeChunk(
+                            x = it[LocalPlayerHomeDefault.chunkX],
+                            z = it[LocalPlayerHomeDefault.chunkZ],
+                            worldUID = UUID.fromString(it[LocalPlayerHomeDefault.worldUUID]),
+                        ),
                     ),
                     isPrivate = it[LocalPlayerHomeDefault.isPrivate],
                 )
@@ -135,8 +139,8 @@ class ProductionPlayerHomeDataStore(
                 this[LocalPlayerHomeNamed.locationZ] = playerHome.location.locationZ
                 this[LocalPlayerHomeNamed.locationYaw] = playerHome.location.locationYaw
                 this[LocalPlayerHomeNamed.locationPitch] = playerHome.location.locationPitch
-                this[LocalPlayerHomeNamed.chunkX] = playerHome.location.chunkX
-                this[LocalPlayerHomeNamed.chunkZ] = playerHome.location.chunkZ
+                this[LocalPlayerHomeNamed.chunkX] = playerHome.location.chunk.x
+                this[LocalPlayerHomeNamed.chunkZ] = playerHome.location.chunk.z
                 this[LocalPlayerHomeNamed.isPrivate] = playerHome.isPrivate
                 this[LocalPlayerHomeNamed.homeName] = playerHome.name
             }
@@ -161,8 +165,11 @@ class ProductionPlayerHomeDataStore(
                             locationZ = it[LocalPlayerHomeNamed.locationZ],
                             locationPitch = it[LocalPlayerHomeNamed.locationPitch],
                             locationYaw = it[LocalPlayerHomeNamed.locationYaw],
-                            chunkX = it[LocalPlayerHomeNamed.chunkX],
-                            chunkZ = it[LocalPlayerHomeNamed.chunkZ],
+                            chunk = PlayerHomeChunk(
+                                x = it[LocalPlayerHomeNamed.chunkX],
+                                z = it[LocalPlayerHomeNamed.chunkZ],
+                                worldUID = UUID.fromString(it[LocalPlayerHomeNamed.worldUUID]),
+                            ),
                         ),
                         isPrivate = it[LocalPlayerHomeNamed.isPrivate],
                         name = it[LocalPlayerHomeNamed.homeName],

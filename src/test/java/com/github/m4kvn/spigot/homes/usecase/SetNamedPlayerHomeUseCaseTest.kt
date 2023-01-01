@@ -1,18 +1,11 @@
 package com.github.m4kvn.spigot.homes.usecase
 
-import com.github.m4kvn.spigot.homes.MockBukkitWrapper
-import com.github.m4kvn.spigot.homes.MockNmsWrapper
-import com.github.m4kvn.spigot.homes.MockPlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.MockWorld
-import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
-import com.github.m4kvn.spigot.homes.messenger.Messenger
 import com.github.m4kvn.spigot.homes.nms.DisplayEntityDataStore
 import com.github.m4kvn.spigot.homes.nms.DisplayEntityManager
-import com.github.m4kvn.spigot.homes.nms.NmsWrapper
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
 import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
-import com.github.m4kvn.spigot.homes.playerhome.local.ProductionPlayerHomeDataStore
-import org.bukkit.plugin.java.JavaPlugin
+import com.github.m4kvn.spigot.homes.testModule
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,8 +14,6 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import org.mockito.kotlin.mock
-import java.util.*
 import kotlin.random.Random
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -36,28 +27,15 @@ internal class SetNamedPlayerHomeUseCaseTest : KoinTest {
     private val displayStore by inject<DisplayEntityDataStore>()
     private val displayManager by inject<DisplayEntityManager>()
     private val setNamedPlayerHomeUseCase by inject<SetNamedPlayerHomeUseCase>()
-    private val createNamedPlayerHomeUseCase by inject<CreateNamedPlayerHomeUseCase>()
-
-
-    private val testModule = module {
-        val mockBukkitWrapper = MockBukkitWrapper()
-        single<JavaPlugin> { mock() }
-        single<NmsWrapper> { MockNmsWrapper() }
-        single<BukkitWrapper> { mockBukkitWrapper }
-        single<PlayerHomeDataStore> { MockPlayerHomeDataStore(get()) }
-        single<Messenger> { mock() }
-        single { mockBukkitWrapper.newMockWorld() }
-        single { DisplayEntityDataStore() }
-        single { DisplayEntityManager(get(), get(), get()) }
-        single { PlayerHomeManager(get(), get()) }
-        single { ProductionPlayerHomeDataStore(get()) }
-        single { CreateNamedPlayerHomeUseCase() }
-        single { SetNamedPlayerHomeUseCase(get(), get(), get()) }
-    }
 
     @BeforeEach
     fun setUp() {
-        startKoin { modules(testModule) }
+        startKoin {
+            modules(testModule, module {
+                single { CreateNamedPlayerHomeUseCase() }
+                single { SetNamedPlayerHomeUseCase(get(), get(), get()) }
+            })
+        }
         homeDataStore.connectDatabase()
         homeDataStore.createTables()
     }
@@ -100,24 +78,32 @@ internal class SetNamedPlayerHomeUseCaseTest : KoinTest {
         val newNamedHome = setNamedPlayerHomeUseCase(player, homeName)
         val entities = displayStore.getDisplayEntities(newNamedHome)
         assertTrue { entities.isNotEmpty() }
-        assertTrue { entities.all { !it.isDead } }
+        assertTrue { entities.all { it.isAlive } }
     }
 
     @Test
     fun 同じ名前の名前付きホームを設定したときに既存のDisplayEntityを削除する() {
-        val homeName = "home_name_${Random.nextInt()}"
-        val playerUUID = UUID.randomUUID()
-        val oldLocationPlayer = world.newMockPlayer(playerUUID = playerUUID)
-        val oldNamedHome = createNamedPlayerHomeUseCase(oldLocationPlayer, homeName)
-        homeManager.addNamedHome(oldNamedHome)
-        displayManager.addEntities(world, oldNamedHome)
-        val oldDisplays = displayStore.getDisplayEntities(oldNamedHome)
-        assertTrue { oldDisplays.isNotEmpty() }
-        val newLocationPlayer = world.newMockPlayer(playerUUID = playerUUID)
-        setNamedPlayerHomeUseCase(newLocationPlayer, homeName)
+        val player = world.newMockPlayer()
+        val home = world.newRandomPlayerHomeNamed(player = player)
+        val entities = displayManager.createEntities(world, home)
+
+        homeManager.addNamedHome(home)
+        assertEquals(
+            expected = home,
+            actual = homeManager.getNamedHome(player.uniqueId, home.name)
+        )
+
+        displayStore.addDisplayEntities(home, entities)
+        assertEquals(
+            expected = entities,
+            actual = displayStore.getDisplayEntities(home)
+        )
+
+        setNamedPlayerHomeUseCase(player, home.name)
+
         assertEquals(
             expected = emptyList(),
-            actual = displayStore.getDisplayEntities(oldNamedHome)
+            actual = displayStore.getDisplayEntities(home)
         )
     }
 }

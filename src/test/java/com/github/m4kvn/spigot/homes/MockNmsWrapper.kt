@@ -11,11 +11,11 @@ class MockNmsWrapper : NmsWrapper {
         world: World,
         text: String,
         isVisible: Boolean,
-        location: DisplayEntityLocation
+        location: DisplayEntityLocation,
     ): DisplayEntity = object : DisplayEntity {
-        override var text: String? = text
-        override var isVisible: Boolean = isVisible
-        override var location: DisplayEntityLocation = location
-        override var isDead: Boolean = true
+        private var isDead = false
+        override val isAlive: Boolean = !isDead
+        override val customText: String = text
+        override fun dead() { isDead = true }
     }
 }

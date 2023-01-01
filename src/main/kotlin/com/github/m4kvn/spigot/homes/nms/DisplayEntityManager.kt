@@ -1,94 +1,40 @@
 package com.github.m4kvn.spigot.homes.nms
 
-import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
 import org.bukkit.Chunk
 import org.bukkit.World
 
-class DisplayEntityManager(
-    private val nms: NmsWrapper,
-    private val bukkit: BukkitWrapper,
-    private val dataStore: DisplayEntityDataStore,
-) {
+interface DisplayEntityManager {
 
-    private val PlayerHome.displayTextList: List<String>?
-        get() = when (this) {
-            is PlayerHome.Default -> "${owner.playerName}'s\ndefault home"
-            is PlayerHome.Named -> "${owner.playerName}'s\nhome named\n<$name>"
-            is PlayerHome.Temporary -> null
-        }?.split("\n")
+    /**
+     * 指定した全てのホームのDisplayEntityをスポーンさせる
+     */
+    fun spawnEntities(chunk: Chunk, playerHomeList: List<PlayerHome>)
 
-    fun spawnEntitiesIn(chunk: Chunk) {
-        dataStore
-            .getDisplayEntitiesIn(chunk.x, chunk.z)
-            .forEach { it.isDead = false }
-    }
+    /**
+     * 指定したホームのDisplayEntityをスポーンさせる
+     */
+    fun spawnEntities(world: World, playerHome: PlayerHome)
 
-    fun despawnEntitiesIn(chunk: Chunk) {
-        dataStore
-            .getDisplayEntitiesIn(chunk.x, chunk.z)
-            .forEach { it.isDead = true }
-    }
+    /**
+     * 指定したチャンクに対応する全てのDisplayEntityを消す
+     */
+    fun despawnEntities(chunk: Chunk)
 
-    fun addEntities(playerHomeList: List<PlayerHome>) {
-        playerHomeList.forEach { playerHome ->
-            val world = bukkit.getWorld(playerHome.location.worldUUID) ?: return@forEach
-            addEntities(world, playerHome)
-        }
-    }
+    /**
+     * 全てのホームのDisplayEntityを消す
+     */
+    fun despawnAllEntities()
 
-    fun addEntities(world: World, playerHome: PlayerHome) {
-        val entities = createEntities(world, playerHome)
-        dataStore.addDisplayEntities(
-            playerHome = playerHome,
-            entities = entities,
-        )
-        spawnEntities(world, playerHome)
-    }
+    /**
+     * 指定したホームのDisplayEntityを消す
+     */
+    fun despawnEntities(playerHome: PlayerHome)
 
-    fun removeEntities(playerHomeList: List<PlayerHome>) {
-        playerHomeList.forEach { playerHome ->
-            removeEntities(playerHome)
-        }
-    }
-
-    fun removeEntities(playerHome: PlayerHome) {
-        despawnEntities(playerHome)
-        dataStore.removeDisplayEntities(playerHome)
-    }
-
-    private fun spawnEntities(world: World, playerHome: PlayerHome) {
-        val chunk = world.getChunkAt(
-            playerHome.location.chunkX,
-            playerHome.location.chunkZ,
-        )
-        if (!chunk.isLoaded) return
-        dataStore
-            .getDisplayEntities(playerHome)
-            .forEach { it.isDead = false }
-    }
-
-    private fun despawnEntities(playerHome: PlayerHome) {
-        val entities = dataStore.getDisplayEntities(playerHome)
-        entities.forEach { it.isDead = true }
-    }
-
-    private fun createEntities(
-        world: World,
-        playerHome: PlayerHome,
-    ): List<DisplayEntity> {
-        val displayTextList = playerHome.displayTextList ?: return emptyList()
-        return displayTextList.mapIndexed { index, displayText ->
-            nms.newDisplayEntity(
-                world = world,
-                text = displayText,
-                isVisible = !playerHome.isPrivate,
-                location = DisplayEntityLocation(
-                    x = playerHome.location.locationX,
-                    y = playerHome.location.locationY + 0.9 - (index * 0.3),
-                    z = playerHome.location.locationZ,
-                )
-            )
-        }
-    }
+    /**
+     * 指定したホームのDisplayEntityを生成する
+     *
+     * @return [PlayerHome]が[PlayerHome.Temporary]の場合は空のListを返す
+     */
+    fun createEntities(world: World, playerHome: PlayerHome): List<DisplayEntity>
 }

@@ -1,37 +1,22 @@
 package com.github.m4kvn.spigot.homes.playerhome
 
-import com.github.m4kvn.spigot.homes.MockBukkitWrapper
-import com.github.m4kvn.spigot.homes.MockPlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.MockWorld
-import com.github.m4kvn.spigot.homes.messenger.Messenger
 import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
-import com.github.m4kvn.spigot.homes.playerhome.local.ProductionPlayerHomeDataStore
-import org.bukkit.plugin.java.JavaPlugin
+import com.github.m4kvn.spigot.homes.testModule
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import org.mockito.kotlin.mock
 import kotlin.test.assertEquals
 
 @Suppress("NonAsciiCharacters", "TestFunctionName")
 class PlayerHomeDataStoreTest : KoinTest {
     private val dataStore by inject<PlayerHomeDataStore>()
     private val world by inject<MockWorld>()
-
-    private val testModule = module {
-        single { MockBukkitWrapper().newMockWorld() }
-        single<JavaPlugin> { mock() }
-        single<Messenger> { mock() }
-        single { PlayerHomeManager(get(), get()) }
-        single { ProductionPlayerHomeDataStore(get()) }
-        single<PlayerHomeDataStore> { MockPlayerHomeDataStore(get()) }
-    }
 
     @BeforeEach
     fun setup() {

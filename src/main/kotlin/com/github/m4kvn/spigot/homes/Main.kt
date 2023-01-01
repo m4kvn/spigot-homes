@@ -9,6 +9,7 @@ import com.github.m4kvn.spigot.homes.messenger.Messenger
 import com.github.m4kvn.spigot.homes.messenger.ProductionMessenger
 import com.github.m4kvn.spigot.homes.nms.*
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
+import com.github.m4kvn.spigot.homes.playerhome.ProductionPlayerHomeManager
 import com.github.m4kvn.spigot.homes.playerhome.TemporaryPlayerHomeManager
 import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.playerhome.local.ProductionPlayerHomeDataStore
@@ -34,11 +35,11 @@ class Main : JavaPlugin(), KoinComponent {
         single<BukkitWrapper> { ProductionBukkitWrapper() }
         single<NmsWrapper> { ProductionNmsWrapper() }
         single<PlayerHomeDataStore> { ProductionPlayerHomeDataStore(get()) }
+        single<PlayerHomeManager> { ProductionPlayerHomeManager(get()) }
         single<Messenger> { ProductionMessenger(get()) }
         single { TemporaryPlayerHomeManager() }
-        single { PlayerHomeManager(get(), get()) }
-        single { DisplayEntityDataStore() }
-        single { DisplayEntityManager(get(), get(), get()) }
+        single<DisplayEntityDataStore> { ProductionDisplayEntityDataStore() }
+        single<DisplayEntityManager> { ProductionDisplayEntityManager(get(), get(), get()) }
         single { AutoSaveScheduler(get(), get(), get(), get()) }
     }
 
@@ -66,16 +67,15 @@ class Main : JavaPlugin(), KoinComponent {
         register(HomesCommendExecutor())
         playerHomeDataStore.connectDatabase()
         playerHomeDataStore.createTables()
-        val allPlayerHome = playerHomeManager.load()
-        displayEntityManager.addEntities(allPlayerHome)
+        playerHomeManager.load()
         autoSaveScheduler.run()
         messenger.sendConsoleMessage("onEnabled")
     }
 
     override fun onDisable() {
         autoSaveScheduler.cancel()
-        val allPlayerHome = playerHomeManager.save()
-        displayEntityManager.removeEntities(allPlayerHome)
+        playerHomeManager.save()
+        displayEntityManager.despawnAllEntities()
         playerHomeDataStore.disconnectDatabase()
         messenger.sendConsoleMessage("onDisabled")
     }

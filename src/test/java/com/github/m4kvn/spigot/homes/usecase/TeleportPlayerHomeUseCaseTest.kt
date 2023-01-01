@@ -3,6 +3,7 @@ package com.github.m4kvn.spigot.homes.usecase
 import com.github.m4kvn.spigot.homes.MockBukkitWrapper
 import com.github.m4kvn.spigot.homes.MockWorld
 import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeChunk
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeLocation
 import com.github.m4kvn.spigot.homes.playerhome.TemporaryPlayerHomeManager
 import org.junit.jupiter.api.AfterEach
@@ -59,8 +60,11 @@ class TeleportPlayerHomeUseCaseTest : KoinTest {
                 locationZ = player.location.z,
                 locationYaw = player.location.yaw,
                 locationPitch = player.location.pitch,
-                chunkX = player.location.chunk.x,
-                chunkZ = player.location.chunk.z,
+                chunk = PlayerHomeChunk(
+                    x = player.location.chunk.x,
+                    z = player.location.chunk.z,
+                    worldUID = player.world.uid,
+                )
             )
         )
     }
@@ -76,8 +80,11 @@ class TeleportPlayerHomeUseCaseTest : KoinTest {
             locationZ = player.location.z,
             locationYaw = player.location.yaw,
             locationPitch = player.location.pitch,
-            chunkX = player.location.chunk.x,
-            chunkZ = player.location.chunk.z,
+            chunk = PlayerHomeChunk(
+                x = player.location.chunk.x,
+                z = player.location.chunk.z,
+                worldUID = player.world.uid,
+            )
         )
         teleportPlayerHomeUseCase(
             player = player,
