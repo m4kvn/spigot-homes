@@ -30,6 +30,8 @@ class HomesSetCommandExecutor : SubCommandExecutor() {
     }
 
     override fun onTabComplete(sender: CommandSender, args: List<String>): List<String> {
-        return emptyList()
+        if (sender !is Player) return emptyList()
+        if (args.lastIndex > 1) return emptyList()
+        return listOf(Constants.DEFAULT_HOME_NAME)
     }
 }

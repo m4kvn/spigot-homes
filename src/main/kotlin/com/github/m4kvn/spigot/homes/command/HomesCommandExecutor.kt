@@ -37,7 +37,12 @@ class HomesCommandExecutor : BaseCommandExecutor() {
     }
 
     override fun onTabComplete(sender: CommandSender, args: Array<out String>, index: Int?): List<String> {
-        return emptyList()
+        val player = sender as? Player ?: return emptyList()
+        if (args.lastIndex > 0) return emptyList()
+        return playerHomeManager
+            .getPlayerHomeListData(player.uniqueId)
+            .namedList
+            .map { it.name }
     }
 
     private fun teleportDefault(player: Player): CommandResponse {
