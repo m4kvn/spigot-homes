@@ -2,7 +2,7 @@ package com.github.m4kvn.spigot.homes
 
 import com.github.m4kvn.spigot.homes.bukkit.BukkitWrapper
 import com.github.m4kvn.spigot.homes.bukkit.ProductionBukkitWrapper
-import com.github.m4kvn.spigot.homes.command.HomesCommendExecutor
+import com.github.m4kvn.spigot.homes.command.HomesCommandExecutor
 import com.github.m4kvn.spigot.homes.listener.ChunkListener
 import com.github.m4kvn.spigot.homes.listener.PlayerRespawnListener
 import com.github.m4kvn.spigot.homes.messenger.Messenger
@@ -14,7 +14,6 @@ import com.github.m4kvn.spigot.homes.playerhome.TemporaryPlayerHomeManager
 import com.github.m4kvn.spigot.homes.playerhome.local.PlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.playerhome.local.ProductionPlayerHomeDataStore
 import com.github.m4kvn.spigot.homes.usecase.*
-import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.component.KoinComponent
@@ -64,7 +63,7 @@ class Main : JavaPlugin(), KoinComponent {
     override fun onEnable() {
         register(ChunkListener())
         register(PlayerRespawnListener())
-        register(HomesCommendExecutor())
+        HomesCommandExecutor().register()
         playerHomeDataStore.connectDatabase()
         playerHomeDataStore.createTables()
         playerHomeManager.load()
@@ -80,15 +79,7 @@ class Main : JavaPlugin(), KoinComponent {
         messenger.sendConsoleMessage("onDisabled")
     }
 
-    private fun register(executor: CommandExecutor) {
-        getCommand(PLUGIN_COMMAND_NAME)?.setExecutor(executor)
-    }
-
     private fun register(listener: Listener) {
         server.pluginManager.registerEvents(listener, this)
-    }
-
-    companion object {
-        private const val PLUGIN_COMMAND_NAME = "homes"
     }
 }

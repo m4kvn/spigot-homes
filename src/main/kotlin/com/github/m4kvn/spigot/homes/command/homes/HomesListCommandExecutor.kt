@@ -1,14 +1,23 @@
-package com.github.m4kvn.spigot.homes.command
+package com.github.m4kvn.spigot.homes.command.homes
 
+import com.github.m4kvn.spigot.homes.command.core.CommandResponse
+import com.github.m4kvn.spigot.homes.command.core.SubCommandExecutor
+import com.github.m4kvn.spigot.homes.messenger.appends
+import com.github.m4kvn.spigot.homes.messenger.send
+import com.github.m4kvn.spigot.homes.messenger.sendMessage
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHome
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeListData
 import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
 import org.bukkit.ChatColor
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.koin.core.component.inject
 
-class HomeListCommand : SubCommand {
-    private val homeManager by inject<PlayerHomeManager>()
+class HomesListCommandExecutor : SubCommandExecutor() {
+    private val homeManager: PlayerHomeManager by inject()
+
+    override val flags: List<String> = listOf("-l", "--list")
+    override val usage: String = ""
 
     private val PlayerHome.position: String
         get() = buildString {
@@ -27,26 +36,34 @@ class HomeListCommand : SubCommand {
     private val PlayerHomeListData.isEmpty: Boolean
         get() = default == null && namedList.isEmpty()
 
-    override fun execute(player: Player, args: List<String>): SubCommand.Response {
+    override fun onCommand(sender: CommandSender, args: List<String>): CommandResponse {
+        val player = sender as? Player
+            ?: return CommandResponse.Failed { INVALID_COMMAND_SENDER }
+        if (args.isNotEmpty()) {
+            return CommandResponse.Failed { INVALID_COMMAND_ARGUMENT_SIZE }
+        }
         val data = homeManager.getPlayerHomeListData(player.uniqueId)
         if (data.isEmpty) {
-            val message = "Your home is empty."
-            return SubCommand.Response.Failed(message)
+            player.sendMessage { HOME_IS_EMPTY }
+            return CommandResponse.Success
         }
-        val message = buildString {
+        player.send {
             appendLine("${player.name}'s home list -----")
             data.default?.let {
                 append("    ")
-                append("${ChatColor.AQUA}default${ChatColor.RESET}")
+                appends(ChatColor.AQUA) { "default" }
                 append(" ${it.position}\n")
             }
             data.namedList.forEach {
                 append("    ")
-                append("${ChatColor.GREEN}${it.name}${ChatColor.RESET}")
+                appends(ChatColor.GREEN) { it.name }
                 append(" ${it.position}\n")
             }
         }
-        player.sendMessage(message)
-        return SubCommand.Response.Success
+        return CommandResponse.Success
+    }
+
+    override fun onTabComplete(sender: CommandSender, args: List<String>): List<String> {
+        return emptyList()
     }
 }

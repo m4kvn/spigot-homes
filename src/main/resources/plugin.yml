@@ -5,5 +5,5 @@ api-version: @api-version@
 commands:
   homes:
     description: This is Homes command.
-    usage: /<command>
+    usage: /<command> <home_name>
     aliases: ['home', "h"]
