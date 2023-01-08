@@ -3,6 +3,7 @@ package com.github.m4kvn.spigot.homes.command.homes
 import com.github.m4kvn.spigot.homes.Constants
 import com.github.m4kvn.spigot.homes.command.core.CommandResponse
 import com.github.m4kvn.spigot.homes.command.core.SubCommandExecutor
+import com.github.m4kvn.spigot.homes.playerhome.PlayerHomeManager
 import com.github.m4kvn.spigot.homes.usecase.RemoveDefaultHomeUseCase
 import com.github.m4kvn.spigot.homes.usecase.RemoveNamedHomeUseCase
 import org.bukkit.command.CommandSender
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player
 import org.koin.core.component.inject
 
 class HomesRemoveCommandExecutor : SubCommandExecutor() {
+    private val playerHomeManager: PlayerHomeManager by inject()
     private val removeDefaultHomeUseCase: RemoveDefaultHomeUseCase by inject()
     private val removeNamedHomeUseCase: RemoveNamedHomeUseCase by inject()
 
@@ -29,7 +31,15 @@ class HomesRemoveCommandExecutor : SubCommandExecutor() {
     }
 
     override fun onTabComplete(sender: CommandSender, args: List<String>): List<String> {
-        return emptyList()
+        val player = sender as? Player ?: return emptyList()
+        if (args.lastIndex > 1) return emptyList()
+        val homeListData = playerHomeManager.getPlayerHomeListData(player.uniqueId)
+        return buildList {
+            if (homeListData.default != null) {
+                add(Constants.DEFAULT_HOME_NAME)
+            }
+            addAll(homeListData.namedList.map { it.name })
+        }
     }
 
     private fun removeDefaultHome(player: Player): CommandResponse {
